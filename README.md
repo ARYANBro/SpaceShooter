@@ -6,4 +6,4 @@ libsdl2-image-dev
 libsdl2-mixer-dev
 
 After building the project run
-cmake --install . --prefix "*buildDirecotry*"
+cmake --install . --prefix "*buildDirectory*"
