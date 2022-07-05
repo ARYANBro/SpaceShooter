@@ -8,6 +8,7 @@
 #include "Entities/Explosion.h"
 
 #include <cassert>
+#include <iostream>
 
 static void RenderTexture(SDL_Texture* texture, SDL_Rect& texRect, const SDL_FRect& rectangle) noexcept
 {
@@ -34,7 +35,7 @@ static bool CheckCollision(SDL_FRect rect1, SDL_FRect rect2) noexcept
 Scene* Scene::s_Scene = nullptr;
 
 Scene::Scene() noexcept
-	: m_Spawner(30)
+	: m_Spawner(2.0f, 3.0f)
 {
 	s_Scene = this;
 	LoadSprites();
@@ -50,38 +51,23 @@ Scene::~Scene() noexcept
 
 void Scene::Update() noexcept
 {
-	m_BackGround.Update();
+	double current = SDL_GetTicks() / 1000.0f;
+	double deltaTime = current - m_Previous;
+	m_Previous = current;
 
-	const uint8_t* state = SDL_GetKeyboardState(nullptr);
-	if (state[SDL_SCANCODE_LSHIFT])
-	{
-		m_Animations.push_back({ &m_SpriteLoader.GetSprite(SpriteType::Explosion), Timer(30) });
-	}
-
-	if (m_Animations.size() >= 1)
-	{
-		for (auto& animation : m_Animations)
-		{
-			int index = (animation.second.GetCurrentTime() / (animation.first->GetNumFramesX() + 1)) % animation.first->GetNumFramesX();
-			animation.first->SetFrameX(index);
-
-			animation.second.Update();
-			if (animation.second.IsExpired())
-				std::printf("Delete Animation");
-		}
-	}
+	m_BackGround.Update(deltaTime);
 
 	if (!m_GameOver)
 	{
-		m_Spawner.Update();
+		m_Spawner.Update(deltaTime);
 		PhysicsUpdate();
 
 		for (Entity* entity : m_Entities)
-			entity->Update();
+			entity->Update(deltaTime);
 	}
 	else
 	{
-		m_ResetTimer.Update();
+		m_ResetTimer.Update(deltaTime);
 		if (m_ResetTimer.IsExpired())
 		{
 			m_GameOver = false;
@@ -95,16 +81,6 @@ void Scene::Update() noexcept
 void Scene::Render() noexcept
 {
 	RenderTexture(m_BackGround.GetTexture(), m_BackGround.GetTextureRectangle(), m_BackGround.GetRectangle());
-
-	for (auto& animation : m_Animations)
-	{
-		RenderSprite(*animation.first, SDL_FRect{
-			.x = Globals::Window::Width / 2,
-			.y = Globals::Window::Height / 2,
-			.w = static_cast<float>(animation.first->GetFrameWidth()),
-			.h = static_cast<float>(animation.first->GetFrameHeight())
-		});
-	}
 
  	if (!m_GameOver)
 	{
@@ -152,7 +128,7 @@ void Scene::LoadSounds() noexcept
 
 void Scene::LoadScene() noexcept
 {
-	m_BackGround.Init("Assets/Textures/space_shooter_pack/Graphics/backgrounds/desert-backgorund-looped.png", 1, 2);
+	m_BackGround.Init("Assets/Textures/space_shooter_pack/Graphics/backgrounds/desert-backgorund-looped.png", 1, 1);
 	m_SoundLoader.PlayMusic();
 	m_SpriteLoader.GetSprite(SpriteType::Player).SetFrameX(2);
 	CreateEntity<Player>(m_SpriteLoader.GetSprite(SpriteType::Player), 2.0f, 2.0f);

@@ -39,10 +39,10 @@ public:
 
 private:
 	bool m_GameOver = false;
-	Timer m_ResetTimer{ 120 };
+	double m_Previous = 0.0;
+	Timer m_ResetTimer{ 2.0f };
 	std::list<Entity*> m_Entities;
 	std::list<Entity*> m_DelQueue;
-	std::list<std::pair<Sprite*, Timer>> m_Animations;
 	ScrollingBackGround m_BackGround;
 	SoundLoader m_SoundLoader;
 	SpriteLoader m_SpriteLoader;

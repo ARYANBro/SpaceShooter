@@ -12,7 +12,7 @@ public:
 	~ScrollingBackGround() noexcept;
 
 	void Init(const std::string& texturePath, int tileX, int tileY) noexcept;
-	void Update() noexcept;
+	void Update(double deltaTime) noexcept;
 
 	int GetTileWidth() const noexcept { return m_TexWidth / m_TileX; }
 	int GetTileHeight() const noexcept { return m_TexHeight / m_TileY; }
@@ -26,6 +26,7 @@ public:
 
 private:
 	int m_TileX, m_TileY;
+	double m_TexRectY;
 	SDL_Texture* m_Texture = nullptr;
 	int m_TexWidth, m_TexHeight;
 	SDL_Rect m_TexRect = SDL_Rect();

@@ -13,7 +13,7 @@ public:
 	Entity(Sprite& sprite, int scaleX = 1, int scaleY = 1) noexcept;
 	virtual ~Entity() noexcept = default;
 
-	virtual void Update() {}
+	virtual void Update(float deltaTime) {}
 
 	void SetSpeedX(float speedX) noexcept { m_SpeedX = speedX; }
 	void SetSpeedY(float speedY) noexcept { m_SpeedY = speedY; }

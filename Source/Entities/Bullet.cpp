@@ -2,15 +2,15 @@
 
 #include "Scene.h"
 
-void Bullet::Update() noexcept
+void Bullet::Update(float deltaTime) noexcept
 {
 	SetActiveFrameX((SDL_GetTicks() / 440) % 2);
 
 	SDL_FRect& rect = GetRectangle();
 	if (m_Fired)
 	{
-		rect.y += GetSpeedY();	
-		rect.x += GetSpeedX();
+		rect.y += GetSpeedY() * deltaTime;	
+		rect.x += GetSpeedX() * deltaTime;
 	}
 
 	if (rect.y <= 0 || Collided() && !IsNull())

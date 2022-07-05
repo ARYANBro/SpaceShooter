@@ -7,7 +7,14 @@
 
 #include <cassert>
 
-void EnemySpawner::SetSpawnTimer(int time) noexcept
+EnemySpawner::EnemySpawner(float minSpawnTime, float maxSpawnTime) noexcept
+	: m_MinSpawnTime(minSpawnTime), m_MaxSpawnTime(maxSpawnTime)
+{
+	float limit = maxSpawnTime - minSpawnTime;
+	SetSpawnTimer(minSpawnTime + (std::rand() / RAND_MAX) * limit);
+}
+
+void EnemySpawner::SetSpawnTimer(float time) noexcept
 {
 	m_SpawnTimer.Reset();
 	m_SpawnTimer.SetTime(time);
@@ -18,12 +25,12 @@ void EnemySpawner::Spawn(Sprite& sprite, int x, int y) noexcept
 	Enemy& enemy = Scene::GetInstance().CreateEntity<Enemy>(sprite, 2.0f, 2.0f);
 	enemy.GetRectangle().x = x;
 	enemy.GetRectangle().y = y;
-	enemy.SetSpeedX(0.1 + (std::rand() / static_cast<float>(RAND_MAX)) * 0.9f);
+	enemy.SetSpeedX(30.0f + (std::rand() / static_cast<float>(RAND_MAX)) * 60.0f);
 }
 
-void EnemySpawner::Update() noexcept
+void EnemySpawner::Update(float deltaTime) noexcept
 {
-	UpdateTimer();
+	UpdateTimer(deltaTime);
 
 	std::list<Entity*>::iterator it = Scene::GetInstance().GetEntities().begin();
 	while (it != Scene::GetInstance().GetEntities().end())
@@ -37,9 +44,9 @@ void EnemySpawner::Update() noexcept
 	}
 }
 
-void EnemySpawner::UpdateTimer() noexcept
+void EnemySpawner::UpdateTimer(float deltaTime) noexcept
 {
-	m_SpawnTimer.Update();
+	m_SpawnTimer.Update(deltaTime);
 
 	if (m_SpawnTimer.IsExpired())
 	{
@@ -47,6 +54,8 @@ void EnemySpawner::UpdateTimer() noexcept
 		int x = (std::rand() / static_cast<float>(RAND_MAX)) * (Globals::Window::Width - sprite.GetFrameWidth());
 		int y = sprite.GetFrameHeight() * -2;
 		Spawn(sprite, x, y);
-		SetSpawnTimer(60 + (std::rand() % 59));		
+
+		float limit = m_MaxSpawnTime - m_MinSpawnTime;
+		SetSpawnTimer(m_MinSpawnTime + (std::rand() / RAND_MAX) * limit);
 	}
 }

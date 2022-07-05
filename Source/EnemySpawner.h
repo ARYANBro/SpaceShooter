@@ -10,16 +10,16 @@ class Scene;
 class EnemySpawner
 {
 public:
-	EnemySpawner(int spawnTimer) noexcept
-		: m_SpawnTimer(spawnTimer) {}
+	EnemySpawner(float minSpawnTime, float maxSpawnTime) noexcept;
 
-	void SetSpawnTimer(int time) noexcept;
+	void SetSpawnTimer(float time) noexcept;
 	void Spawn(Sprite& sprite, int x, int y) noexcept;
-	void Update() noexcept;
+	void Update(float deltaTime) noexcept;
 
 private:
+	float m_MinSpawnTime, m_MaxSpawnTime;
 	Timer m_SpawnTimer;
 
 private:
-	void UpdateTimer() noexcept;
+	void UpdateTimer(float deltaTime) noexcept;
 };

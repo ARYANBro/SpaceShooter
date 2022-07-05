@@ -25,15 +25,18 @@ void ScrollingBackGround::Init(const std::string& texturePath, int tileX, int ti
 
 	SDL_QueryTexture(m_Texture, nullptr, nullptr, &m_TexWidth, &m_TexHeight);
 
-	m_TexRect.w = GetTileWidth();
-	m_TexRect.h  = GetTileHeight();
+	m_TexRect.w = m_TexWidth;
+	m_TexRect.h  = m_TexHeight;
 
-	m_Rect.w = Globals::Window::Width;
-	m_Rect.h = Globals::Window::Height;
+	m_Rect.w = (Globals::Window::Width / m_TexWidth) * m_TexWidth;
+	m_Rect.h = (Globals::Window::Width / m_TexWidth) * m_TexHeight;
+
+	SDL_QueryTexture(m_Texture, nullptr, nullptr, &m_TexWidth, &m_TexHeight);
 }
 
-void ScrollingBackGround::Update() noexcept
+void ScrollingBackGround::Update(double deltaTime) noexcept
 {
-	if (--m_TexRect.y <= 0)
-		m_TexRect.y = GetTileHeight();
+	m_Rect.y += deltaTime * 200;
+	if (m_Rect.y >= 0.0)
+		m_Rect.y = GetTileHeight() - m_Rect.h;
 }

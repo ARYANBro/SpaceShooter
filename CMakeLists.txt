@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.23.1)
+cmake_minimum_required(VERSION 3.23.2)
 
-project(3DGame)
+project(SpaceShooter)
 
 file(GLOB_RECURSE Sources
 	Source/*.cpp

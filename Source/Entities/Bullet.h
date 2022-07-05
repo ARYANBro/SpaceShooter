@@ -12,7 +12,7 @@ public:
 		AddTag("Bullet");
 	}
 
-	void Update() noexcept;
+	void Update(float deltaTime) noexcept;
 
 	virtual void OnCollision(const Entity& entity) override;
 	void Fire() noexcept { m_Fired = true; }

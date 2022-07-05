@@ -16,13 +16,13 @@ public:
 		AddTag("Enemy");	
 	}
 		
-	virtual void Update() override;
+	virtual void Update(float deltaTime) override;
 	virtual void OnCollision(const Entity& entity) override;
 private:
 	friend class Scene;
 
 private:
-	Timer m_ReloadTimer{ 140 };
+	Timer m_ReloadTimer{ 2.3f };
 	
 private:
 	void FireBullet() noexcept;

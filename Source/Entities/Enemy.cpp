@@ -19,11 +19,11 @@ static void CalculateSlope(SDL_FRect rect1, SDL_FRect rect2, SDL_FRect& inRect) 
 	inRect.y = (rect1.y - rect2.y) / distance;
 }
 
-void Enemy::Update()
+void Enemy::Update(float deltaTime)
 {
-	GetRectangle().y += GetSpeedX();
+	GetRectangle().y += GetSpeedX() * deltaTime;
 
-	m_ReloadTimer.Update();
+	m_ReloadTimer.Update(deltaTime);
 	if (m_ReloadTimer.IsExpired())
 	{
 		m_ReloadTimer.Reset();
@@ -50,7 +50,7 @@ void Enemy::FireBullet() noexcept
 	bullet.GetRectangle().x = GetRectangle().x;
 	bullet.GetRectangle().y = GetRectangle().y + bullet.GetRectangle().h;
 	
-	auto [speedX, speedY] = CalculateBulletDir(bullet, 5.0f);
+	auto [speedX, speedY] = CalculateBulletDir(bullet, 250.0f);
 	bullet.SetSpeedX(speedX);
 	bullet.SetSpeedY(speedY);
 

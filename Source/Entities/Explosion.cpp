@@ -10,12 +10,12 @@ Explosion::Explosion(Sprite& sprite, int scaleX, int scaleY) noexcept
 	Scene::GetInstance().GetSoundLoader().PlaySound(SoundFXType::EnemyDied);
 }
 
-void Explosion::Update()
+void Explosion::Update(float deltaTime)
 {
-	m_AnimationIdx = (m_Timer.GetCurrentTime() / 6) % 5;
+	m_AnimationIdx = static_cast<int>(m_Timer.GetCurrentTime() * 10);
 	SetActiveFrameX(m_AnimationIdx);
 
-	m_Timer.Update();
+	m_Timer.Update(deltaTime);
 	if (m_Timer.IsExpired())
 		Scene::GetInstance().DestroyEntity(this);
 }

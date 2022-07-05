@@ -57,7 +57,6 @@ static void InitRenderer() noexcept
 
 	Globals::Renderer::Renderer = SDL_CreateRenderer(Globals::Window::GetWindow(), -1, SDL_RENDERER_ACCELERATED);
 	CHECK_SDL_ERROR(Globals::Renderer::GetRenderer() != nullptr)
-	SDL_RenderSetVSync(Globals::Renderer::GetRenderer(), true);
 }
 
 static void SDLInit() noexcept
