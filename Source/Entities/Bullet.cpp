@@ -13,12 +13,15 @@ void Bullet::Update(float deltaTime) noexcept
 		rect.x += GetSpeedX() * deltaTime;
 	}
 
-	if (rect.y <= 0 || Collided() && !IsNull())
+	if (rect.y <= 0 && !IsNull())
 		Scene::GetInstance().DestroyEntity(this);
 }
 
 void Bullet::OnCollision(const Entity& entity)
 {
 	if (!entity.CheckTag("Bullet"))
+	{
 		SetCollided(true);
+		Scene::GetInstance().DestroyEntity(this);
+	}
 }

@@ -4,7 +4,7 @@ void Timer::Update(float deltaTime) noexcept
 {
 	m_CurrentTime += deltaTime;
 	if (m_CurrentTime >= m_TargetTime)
-			m_Expired = true;
+		m_Expired = true;
 }
 
 void Timer::Reset() noexcept

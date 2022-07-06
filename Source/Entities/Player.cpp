@@ -2,9 +2,11 @@
 
 #include "Bullet.h"
 #include "Globals.h"
+#include "Explosion.h"
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 Player::Player(Sprite& sprite, int scaleX, int scaleY) noexcept
 	: PhysicsEntity(sprite, scaleX, scaleY)
@@ -24,9 +26,13 @@ void Player::Update(float deltaTime)
 
 	if (Collided())
 	{
-		SetCollided(false);
-		Scene::GetInstance().DestroyEntity(this);
-		Scene::GetInstance().Reset();
+		m_DeathTimer.Update(deltaTime);
+		if (m_DeathTimer.IsExpired())
+		{
+			SetCollided(false);
+			Scene::GetInstance().DestroyEntity(this);
+			Scene::GetInstance().Reset();		
+		}
 	}
 }
 
@@ -36,6 +42,13 @@ void Player::OnCollision(const Entity& entity)
 	{
 		SetCollided(true);
 		Scene::GetInstance().GetSoundLoader().PlaySound(SoundFXType::PlayerDied);
+
+		Sprite& sprite = Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Explosion);
+		Explosion& explosion = Scene::GetInstance().CreateEntity<Explosion>(sprite, 3, 3);
+		explosion.GetRectangle().x = GetRectangle().x;
+		explosion.GetRectangle().y = GetRectangle().y;
+		m_DeathTimer.SetTime(explosion.GetTimer().GetTargetTime());
+		Hide();
 	}
 }
 

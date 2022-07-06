@@ -19,6 +19,8 @@ public:
 	void SetSpeedY(float speedY) noexcept { m_SpeedY = speedY; }
 	void SetActiveFrameX(int frame) noexcept { m_ActiveFrameX = frame; }
 	void SetActiveFrameY(int frame) noexcept { m_ActiveFrameY = frame; }
+	void Hide() noexcept { m_Hidden = true; }
+	void Unhide() noexcept { m_Hidden = false; }
 	void AddTag(const std::string& tag) { assert(m_TagIndex < 8); m_Tags[m_TagIndex++] = tag; }
 
 	bool IsNull() const noexcept { return m_IsNull; }
@@ -29,6 +31,7 @@ public:
 	float GetSpeedY() const noexcept { return m_SpeedY; }
 	int GetActiveFrameX() const noexcept { return m_ActiveFrameX; }
 	int GetActiveFrameY() const noexcept { return m_ActiveFrameY; }
+	bool Hidden() const noexcept { return m_Hidden; }
 
 	SDL_FRect& GetRectangle() noexcept { return m_Rect; }
 	const std::array<std::string, 8>& GetTags() const noexcept { return m_Tags; }
@@ -40,6 +43,7 @@ private:
 	std::array<std::string, 8> m_Tags;
 	int m_TagIndex = 0;
 	bool m_IsNull = false;
+	bool m_Hidden = false;
 	SDL_FRect m_Rect = SDL_FRect();
 	Sprite& m_Sprite;
 	float m_SpeedX = 0.0f;

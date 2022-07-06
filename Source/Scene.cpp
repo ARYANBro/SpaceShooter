@@ -85,16 +85,20 @@ void Scene::Render() noexcept
  	if (!m_GameOver)
 	{
 		for (Entity* entity : m_Entities)
-			::Render(*entity);
+		{
+			if (!entity->Hidden())
+				::Render(*entity);
+		}
 	}
 }
 
 void Scene::DestroyEntity(Entity* entity) noexcept
 {
-	assert(entity->IsNull() == false && "Entity is already destroyed");
-	
-	entity->m_IsNull = true;
-	m_DelQueue.push_back(entity);
+	if (!entity->IsNull())
+	{
+		entity->m_IsNull = true;
+		m_DelQueue.push_back(entity);
+	}
 }
 
 void Scene::Reset() noexcept
@@ -138,17 +142,14 @@ void Scene::PhysicsUpdate() noexcept
 {
 	for (Entity* e1 : m_Entities)
 	{
-		if (e1->CheckTag("PhysicsEntity"))
+		if (!e1->IsNull() && e1->CheckTag("PhysicsEntity"))
 		{
 			for (Entity* e2 : m_Entities)
 			{
-				if (e2->CheckTag("PhysicsEntity") && e2 != e1)
+				if (!e2->IsNull() && e2->CheckTag("PhysicsEntity") && e2 != e1)
 				{
 					if (CheckCollision(e2->GetRectangle(), e1->GetRectangle()))
-					{
 						static_cast<PhysicsEntity*>(e1)->OnCollision(*e2);
-						static_cast<PhysicsEntity*>(e2)->OnCollision(*e1);
-					}
 				}
 			}
 		}

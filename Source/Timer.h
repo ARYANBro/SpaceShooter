@@ -12,6 +12,7 @@ public:
 	void SetTime(float time) noexcept { m_TargetTime = time; }
 	bool IsExpired() const noexcept { return m_Expired; }
 	float GetCurrentTime() const noexcept { return m_CurrentTime; }
+	float GetTargetTime() const noexcept { return m_TargetTime; }
 
 private:
 	float m_TargetTime = 0;

@@ -20,6 +20,7 @@ private:
 	Timer m_ReloadTimer{ 0.5 };
 	Timer m_AnimationIdxL{ 0.3f };
 	Timer m_AnimationIdxR{ 0.3f };
+	Timer m_DeathTimer;
 
 private:
 	void ProcessInput(float deltaTime) noexcept;

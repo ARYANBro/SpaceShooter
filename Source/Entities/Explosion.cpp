@@ -12,7 +12,7 @@ Explosion::Explosion(Sprite& sprite, int scaleX, int scaleY) noexcept
 
 void Explosion::Update(float deltaTime)
 {
-	m_AnimationIdx = static_cast<int>(m_Timer.GetCurrentTime() * 10);
+	m_AnimationIdx = static_cast<int>(m_Timer.GetCurrentTime() * 75) / 5;
 	SetActiveFrameX(m_AnimationIdx);
 
 	m_Timer.Update(deltaTime);
