@@ -1,11 +1,8 @@
 #pragma once
 
-#include <list>
-
 #include "Timer.h"
 
 class Sprite;
-class Scene;
 
 class EnemySpawner
 {
@@ -13,7 +10,10 @@ public:
 	EnemySpawner(float minSpawnTime, float maxSpawnTime) noexcept;
 
 	void SetSpawnTimer(float time) noexcept;
-	void Spawn(Sprite& sprite, int x, int y) noexcept;
+
+	template<typename EnemyType>
+	EnemyType& Spawn(Sprite& sprite, int x, int y) noexcept;
+
 	void Update(float deltaTime) noexcept;
 
 private:
@@ -22,4 +22,9 @@ private:
 
 private:
 	void UpdateTimer(float deltaTime) noexcept;
+
+	template<typename EnemyType>
+	EnemyType& SpawnInitEnemy() noexcept;
 };
+
+#include "EnemySpawner.inl"

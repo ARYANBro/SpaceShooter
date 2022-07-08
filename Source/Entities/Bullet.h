@@ -6,8 +6,8 @@
 class Bullet : public PhysicsEntity
 {
 public:
-	Bullet(Sprite& sprite, int scaleX = 1, int scaleY = 1) noexcept
-		: PhysicsEntity(sprite, scaleX, scaleY)
+	Bullet(Sprite& sprite, Entity& parent, int scaleX = 1, int scaleY = 1) noexcept
+		: PhysicsEntity(sprite, scaleX, scaleY), m_Parent(parent)
 	{
 		AddTag("Bullet");
 	}
@@ -17,7 +17,9 @@ public:
 	virtual void OnCollision(const Entity& entity) override;
 	void Fire() noexcept { m_Fired = true; }
 	bool IsFired() const noexcept { return m_Fired; }
+	const Entity& GetParent() const noexcept { return m_Parent; }
 
 private:
 	bool m_Fired = false;
+	const Entity& m_Parent;
 };

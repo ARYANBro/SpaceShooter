@@ -6,6 +6,7 @@
 #include "Entities/Bullet.h"
 #include "Entities/PhysicsEntity.h"
 #include "Entities/Explosion.h"
+#include "EnemySpawner.h"
 
 #include <cassert>
 #include <iostream>
@@ -35,9 +36,11 @@ static bool CheckCollision(SDL_FRect rect1, SDL_FRect rect2) noexcept
 Scene* Scene::s_Scene = nullptr;
 
 Scene::Scene() noexcept
-	: m_Spawner(2.0f, 3.0f)
+	: m_Spawner(nullptr)
 {
 	s_Scene = this;
+	m_Spawner = new EnemySpawner(2.0f, 3.0f);
+
 	LoadSprites();
 	LoadSounds();
 	LoadScene();
@@ -47,6 +50,8 @@ Scene::~Scene() noexcept
 {
 	for (Entity* entity : m_Entities)
 		delete entity;
+
+	delete m_Spawner;
 }
 
 void Scene::Update() noexcept
@@ -59,7 +64,7 @@ void Scene::Update() noexcept
 
 	if (!m_GameOver)
 	{
-		m_Spawner.Update(deltaTime);
+		m_Spawner->Update(deltaTime);
 		PhysicsUpdate();
 
 		for (Entity* entity : m_Entities)
@@ -118,7 +123,9 @@ void Scene::LoadSprites() noexcept
 	m_SpriteLoader.Load(SpriteType::Explosion, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/explosion.png", { 5, 1 });
 	m_SpriteLoader.Load(SpriteType::Player, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/ship.png", { 5, 2 });
 	m_SpriteLoader.Load(SpriteType::Bullet, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/laser-bolts.png", { 2, 2 });
-	m_SpriteLoader.Load(SpriteType::Enemy, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/enemy-small.png", { 2, 1 });
+	m_SpriteLoader.Load(SpriteType::SmallEnemy, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/enemy-small.png", { 2, 1 });
+	m_SpriteLoader.Load(SpriteType::MediumEnemy, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/enemy-medium.png", { 2, 1 });
+	m_SpriteLoader.Load(SpriteType::BigEnemy, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/enemy-big.png", { 2, 1 });
 }
 
 void Scene::LoadSounds() noexcept

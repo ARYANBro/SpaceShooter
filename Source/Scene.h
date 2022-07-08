@@ -5,17 +5,14 @@
 #include "Globals.h"
 #include "Timer.h"
 #include "BackGround.h"
-#include "EnemySpawner.h"
-#include "SpriteLoader.h"
 #include "SoundLoader.h"
-
-#include <SDL2/SDL_mixer.h>
+#include "SpriteLoader.h"
 
 #include <list>
-#include <map>
-#include <concepts>
-#include <array>
-#include <vector>
+
+class EnemySpawner;
+class SpriteLoader;
+class SoundLoader;
 
 class Scene
 {
@@ -44,9 +41,9 @@ private:
 	std::list<Entity*> m_Entities;
 	std::list<Entity*> m_DelQueue;
 	ScrollingBackGround m_BackGround;
-	SoundLoader m_SoundLoader;
 	SpriteLoader m_SpriteLoader;
-	EnemySpawner m_Spawner;
+	SoundLoader m_SoundLoader;
+	EnemySpawner* m_Spawner;
 
 	static Scene* s_Scene;
 

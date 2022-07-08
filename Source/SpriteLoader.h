@@ -6,7 +6,7 @@
 
 enum class SpriteType
 {
-	Explosion, Player, Bullet, Enemy
+	Explosion, Player, Bullet, SmallEnemy, MediumEnemy, BigEnemy
 };
 
 class SpriteLoader
@@ -17,5 +17,5 @@ public:
 	Sprite& GetSprite(SpriteType type) noexcept { return m_Sprites[static_cast<int>(type)]; }
 
 private:
-	std::array<Sprite, 4> m_Sprites;
+	std::array<Sprite, 6> m_Sprites;
 };

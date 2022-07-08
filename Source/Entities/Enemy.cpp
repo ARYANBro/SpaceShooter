@@ -5,6 +5,8 @@
 #include "Player.h"
 #include "Globals.h"
 #include "Explosion.h"
+#include "SpriteLoader.h"
+#include "SoundLoader.h"
 
 #include <SDL2/SDL_mixer.h>
 
@@ -21,6 +23,8 @@ static void CalculateSlope(SDL_FRect rect1, SDL_FRect rect2, SDL_FRect& inRect) 
 
 void Enemy::Update(float deltaTime)
 {
+	SetActiveFrameX((SDL_GetTicks() / 150) % 2);
+
 	GetRectangle().y += GetSpeedX() * deltaTime;
 
 	m_ReloadTimer.Update(deltaTime);
@@ -33,22 +37,30 @@ void Enemy::Update(float deltaTime)
 
 void Enemy::OnCollision(const Entity& entity)
 {
-	PhysicsEntity::OnCollision(entity);
-	Explosion& explosion = Scene::GetInstance().CreateEntity<Explosion>(Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Explosion), 3, 3);
-	explosion.GetRectangle().x = GetRectangle().x;
-	explosion.GetRectangle().y = GetRectangle().y;
+	if (entity.CheckTag("Bullet"))
+	{
+		const Bullet& bullet = static_cast<const Bullet&>(entity);
+		if (&bullet.GetParent() != this)
+		{
+			PhysicsEntity::OnCollision(entity);
+			Explosion& explosion = Scene::GetInstance().CreateEntity<Explosion>(Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Explosion), 3, 3);
+			explosion.GetRectangle().x = GetRectangle().x;
+			explosion.GetRectangle().y = GetRectangle().y;
+		}
+	}
 }
 
 void Enemy::FireBullet() noexcept
 {
 	Bullet& bullet = Scene::GetInstance().CreateEntity<Bullet>(
 		Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Bullet),
+		*this,
 		2, 2
 	);
 
 	bullet.Fire();
-	bullet.GetRectangle().x = GetRectangle().x;
-	bullet.GetRectangle().y = GetRectangle().y + bullet.GetRectangle().h;
+	bullet.GetRectangle().x = GetRectangle().x + GetSprite().GetFrameWidth() / 2.0f;
+	bullet.GetRectangle().y = GetRectangle().y +  GetSprite().GetFrameHeight() + 5;
 	
 	auto [speedX, speedY] = CalculateBulletDir(bullet, 250.0f);
 	bullet.SetSpeedX(speedX);

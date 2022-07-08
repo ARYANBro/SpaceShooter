@@ -19,7 +19,7 @@ void Bullet::Update(float deltaTime) noexcept
 
 void Bullet::OnCollision(const Entity& entity)
 {
-	if (!entity.CheckTag("Bullet"))
+	if (!entity.CheckTag("Bullet") && &entity != &m_Parent)
 	{
 		SetCollided(true);
 		Scene::GetInstance().DestroyEntity(this);

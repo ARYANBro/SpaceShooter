@@ -2,6 +2,7 @@
 
 #include "Sprite.h"
 #include "Scene.h"
+#include "SoundLoader.h"
 
 Explosion::Explosion(Sprite& sprite, int scaleX, int scaleY) noexcept
 	: Entity(sprite, scaleX, scaleY)

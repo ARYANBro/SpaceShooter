@@ -3,6 +3,8 @@
 #include "Bullet.h"
 #include "Globals.h"
 #include "Explosion.h"
+#include "SpriteLoader.h"
+#include "SoundLoader.h"
 
 #include <algorithm>
 #include <cassert>
@@ -101,7 +103,7 @@ void Player::MoveStraight() noexcept
 
 void Player::FireBullet() noexcept
 {
-	Bullet& bullet = Scene::GetInstance().CreateEntity<Bullet>(Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Bullet), 2, 2);
+	Bullet& bullet = Scene::GetInstance().CreateEntity<Bullet>(Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Bullet), *this, 2, 2);
 	bullet.Fire();
 	bullet.SetSpeedY(-250.0f);
 	bullet.GetRectangle().x = GetRectangle().x;
