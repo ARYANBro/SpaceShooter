@@ -24,8 +24,7 @@ static void CalculateSlope(SDL_FRect rect1, SDL_FRect rect2, SDL_FRect& inRect) 
 void Enemy::Update(float deltaTime)
 {
 	SetActiveFrameX((SDL_GetTicks() / 150) % 2);
-
-	GetRectangle().y += GetSpeedX() * deltaTime;
+	GetRectangle().y += GetSpeedY() * deltaTime;
 
 	m_ReloadTimer.Update(deltaTime);
 	if (m_ReloadTimer.IsExpired())
@@ -38,19 +37,22 @@ void Enemy::Update(float deltaTime)
 void Enemy::OnCollision(const Entity& entity)
 {
 	if (entity.CheckTag("Bullet"))
-	{
+	{	
 		const Bullet& bullet = static_cast<const Bullet&>(entity);
 		if (&bullet.GetParent() != this)
 		{
-			PhysicsEntity::OnCollision(entity);
-			Explosion& explosion = Scene::GetInstance().CreateEntity<Explosion>(Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Explosion), 3, 3);
-			explosion.GetRectangle().x = GetRectangle().x;
-			explosion.GetRectangle().y = GetRectangle().y;
+			if (--m_Lives <= 0)
+			{
+				PhysicsEntity::OnCollision(entity);
+				Explosion& explosion = Scene::GetInstance().CreateEntity<Explosion>(Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Explosion), 3, 3);
+				explosion.GetRectangle().x = GetRectangle().x;
+				explosion.GetRectangle().y = GetRectangle().y;
+			}
 		}
 	}
 }
 
-void Enemy::FireBullet() noexcept
+Bullet* Enemy::FireBullet() noexcept
 {
 	Bullet& bullet = Scene::GetInstance().CreateEntity<Bullet>(
 		Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Bullet),
@@ -67,6 +69,7 @@ void Enemy::FireBullet() noexcept
 	bullet.SetSpeedY(speedY);
 
 	Scene::GetInstance().GetSoundLoader().PlaySound(SoundFXType::EnemyFire);
+	return &bullet;
 }
 
 std::pair<float, float> Enemy::CalculateBulletDir(const Bullet& bullet, float speedMultiplier) noexcept

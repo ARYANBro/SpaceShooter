@@ -46,37 +46,14 @@ void EnemySpawner::UpdateTimer(float deltaTime) noexcept
 
 	if (m_SpawnTimer.IsExpired())
 	{
-		// static auto s_SpawnInitEnemy = [this](const std::string& enemyType)
-		// {
-		// 	static std::map<std::string, SpriteType> s_SpriteMap = {
-		// 		{ "SmallEnemy", SpriteType::SmallEnemy },
-		// 		{ "MediumEnemy", SpriteType::MediumEnemy },
-		// 		{ "BigEnemy", SpriteType::BigEnemy }
-		// 	};
-
-		// 	Sprite& sprite = Scene::GetInstance().GetSpriteLoader().GetSprite(s_SpriteMap[enemyType]);
-		// 	int x = (std::rand() / static_cast<float>(RAND_MAX)) * (Globals::Window::Width - sprite.GetFrameWidth());
-		// 	int y = sprite.GetFrameHeight() * -2;
-
-		// 	if (enemyType == "SmallEnemy")
-		// 		Spawn<SmallEnemy>(sprite, x, y);
-		// 	else if (enemyType == "MediumEnemy")
-		// 		Spawn<MediumEnemy>(sprite, x, y);
-		// 	else if (enemyType == "BigEnemy")
-		// 		Spawn<BigEnemy>(sprite, x, y);
-		// };
-
 		float rand = std::rand() / static_cast<float>(RAND_MAX);
 
 		if (rand <= 0.6f)
 			SpawnInitEnemy<SmallEnemy>();
-			// s_SpawnInitEnemy("SmallEnemy");
 		else if (rand <= 0.9f)
 			SpawnInitEnemy<MediumEnemy>();
-			// s_SpawnInitEnemy("MediumEnemy");
 		else if (rand <= 1.0f)
 			SpawnInitEnemy<BigEnemy>();
-			// s_SpawnInitEnemy("BigEnemy");
 
 		float limit = m_MaxSpawnTime - m_MinSpawnTime;
 		SetSpawnTimer(m_MinSpawnTime + (std::rand() / RAND_MAX) * limit);
