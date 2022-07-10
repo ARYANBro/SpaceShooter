@@ -7,12 +7,11 @@
 #include "BackGround.h"
 #include "SoundLoader.h"
 #include "SpriteLoader.h"
+#include "DeltaTime.h"
 
 #include <list>
 
 class EnemySpawner;
-class SpriteLoader;
-class SoundLoader;
 
 class Scene
 {
@@ -33,10 +32,11 @@ public:
 	SpriteLoader& GetSpriteLoader() noexcept { return m_SpriteLoader; }
 	SoundLoader& GetSoundLoader() noexcept { return m_SoundLoader; } 
 	static Scene& GetInstance() noexcept { return *s_Scene; }
+	bool GetGameOver() const noexcept { return m_GameOver; }
 
 private:
 	bool m_GameOver = false;
-	double m_Previous = 0.0;
+	DeltaTime m_DeltaTime;
 	Timer m_ResetTimer{ 2.0f };
 	std::list<Entity*> m_Entities;
 	std::list<Entity*> m_DelQueue;
@@ -48,6 +48,8 @@ private:
 	static Scene* s_Scene;
 
 private:
+	void SetGameOver(bool gameOver) noexcept { m_GameOver = gameOver; }
+
 	void LoadSprites() noexcept;
 	void LoadSounds() noexcept;
 	void LoadScene() noexcept;

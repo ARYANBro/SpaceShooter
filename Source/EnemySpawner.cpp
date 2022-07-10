@@ -27,17 +27,6 @@ void EnemySpawner::SetSpawnTimer(float time) noexcept
 void EnemySpawner::Update(float deltaTime) noexcept
 {
 	UpdateTimer(deltaTime);
-
-	std::list<Entity*>::iterator it = Scene::GetInstance().GetEntities().begin();
-	while (it != Scene::GetInstance().GetEntities().end())
-	{
-		Entity* enemy = *it++;
-		if (enemy->CheckTag("Enemy"))
-		{
-			if (enemy->GetRectangle().y >= Globals::Window::Height || static_cast<Enemy*>(enemy)->Collided())
-				Scene::GetInstance().DestroyEntity(enemy);
-		}
-	}
 }
 
 void EnemySpawner::UpdateTimer(float deltaTime) noexcept
@@ -48,11 +37,11 @@ void EnemySpawner::UpdateTimer(float deltaTime) noexcept
 	{
 		float rand = std::rand() / static_cast<float>(RAND_MAX);
 
-		if (rand <= 0.6f)
+		if (rand <= m_SmallESpawnChance)
 			SpawnInitEnemy<SmallEnemy>();
-		else if (rand <= 0.9f)
+		else if (rand <= m_MediumESpawnChance)
 			SpawnInitEnemy<MediumEnemy>();
-		else if (rand <= 1.0f)
+		else if (rand <= m_BigESpawnChance)
 			SpawnInitEnemy<BigEnemy>();
 
 		float limit = m_MaxSpawnTime - m_MinSpawnTime;

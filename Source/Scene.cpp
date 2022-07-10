@@ -56,26 +56,28 @@ Scene::~Scene() noexcept
 
 void Scene::Update() noexcept
 {
-	double current = SDL_GetTicks() / 1000.0f;
-	double deltaTime = current - m_Previous;
-	m_Previous = current;
+	// double current = SDL_GetTicks() / 1000.0f;
+	// double deltaTime = current - m_Previous;
+	// m_Previous = current;
+	m_DeltaTime.Update();
+	
 
-	m_BackGround.Update(deltaTime);
+	m_BackGround.Update(m_DeltaTime.GetDeltaTime());
 
-	if (!m_GameOver)
+	if (!GetGameOver())
 	{
-		m_Spawner->Update(deltaTime);
+		m_Spawner->Update(m_DeltaTime.GetDeltaTime());
 		PhysicsUpdate();
 
 		for (Entity* entity : m_Entities)
-			entity->Update(deltaTime);
+			entity->Update(m_DeltaTime.GetDeltaTime());
 	}
 	else
 	{
-		m_ResetTimer.Update(deltaTime);
+		m_ResetTimer.Update(m_DeltaTime.GetDeltaTime());
 		if (m_ResetTimer.IsExpired())
 		{
-			m_GameOver = false;
+			SetGameOver(false);
 			m_ResetTimer.Reset();
 		}
 	}
@@ -87,7 +89,7 @@ void Scene::Render() noexcept
 {
 	RenderTexture(m_BackGround.GetTexture(), m_BackGround.GetTextureRectangle(), m_BackGround.GetRectangle());
 
- 	if (!m_GameOver)
+ 	if (!GetGameOver())
 	{
 		for (Entity* entity : m_Entities)
 		{
@@ -115,7 +117,7 @@ void Scene::Reset() noexcept
 	}
 
 	CreateEntity<Player>(m_SpriteLoader.GetSprite(SpriteType::Player), 2.0f, 2.0f);
-	m_GameOver = true;
+	SetGameOver(true);
 }
 
 void Scene::LoadSprites() noexcept
@@ -149,11 +151,11 @@ void Scene::PhysicsUpdate() noexcept
 {
 	for (Entity* e1 : m_Entities)
 	{
-		if (!e1->IsNull() && e1->CheckTag("PhysicsEntity"))
+		if (e1->CheckTag("PhysicsEntity"))
 		{
 			for (Entity* e2 : m_Entities)
 			{
-				if (!e2->IsNull() && e2->CheckTag("PhysicsEntity") && e2 != e1)
+				if (e2->CheckTag("PhysicsEntity") && e2 != e1)
 				{
 					if (CheckCollision(e2->GetRectangle(), e1->GetRectangle()))
 						static_cast<PhysicsEntity*>(e1)->OnCollision(*e2);

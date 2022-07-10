@@ -25,13 +25,12 @@ void Enemy::Update(float deltaTime)
 {
 	SetActiveFrameX((SDL_GetTicks() / 150) % 2);
 	GetRectangle().y += GetSpeedY() * deltaTime;
+	GetRectangle().y = std::min(GetRectangle().y, (Globals::Window::Height - Globals::Window::Height / 3.0f));
 
-	m_ReloadTimer.Update(deltaTime);
-	if (m_ReloadTimer.IsExpired())
-	{
-		m_ReloadTimer.Reset();
-		FireBullet();
-	}
+	ShootUpdate(deltaTime);
+
+	if (Collided())
+		CollisionUpdate(deltaTime);
 }
 
 void Enemy::OnCollision(const Entity& entity)
@@ -41,12 +40,13 @@ void Enemy::OnCollision(const Entity& entity)
 		const Bullet& bullet = static_cast<const Bullet&>(entity);
 		if (&bullet.GetParent() != this)
 		{
+			PhysicsEntity::OnCollision(entity);
 			if (--m_Lives <= 0)
 			{
-				PhysicsEntity::OnCollision(entity);
 				Explosion& explosion = Scene::GetInstance().CreateEntity<Explosion>(Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Explosion), 3, 3);
 				explosion.GetRectangle().x = GetRectangle().x;
 				explosion.GetRectangle().y = GetRectangle().y;
+				Scene::GetInstance().DestroyEntity(this);
 			}
 		}
 	}
@@ -89,4 +89,42 @@ std::pair<float, float> Enemy::CalculateBulletDir(const Bullet& bullet, float sp
 	}
 
 	return { inRect.x * speedMultiplier, inRect.y * speedMultiplier };
+}
+
+void Enemy::Flicker(float deltaTime) noexcept
+{
+	m_FlickerTimer.Update(deltaTime);
+	if (m_FlickerTimer.IsExpired())
+	{
+		m_FlickerTimer.Reset();
+		if (Hidden())
+			Unhide();
+		else
+			Hide();
+	}
+}
+
+void Enemy::CollisionUpdate(float deltaTime) noexcept
+{
+	m_HitTimer.Update(deltaTime);
+	if (m_HitTimer.IsExpired())
+	{
+		if (Hidden())
+			Unhide();
+
+		m_HitTimer.Reset();
+		SetCollided(false);
+	}
+
+	Flicker(deltaTime);
+}
+
+void Enemy::ShootUpdate(float deltaTime) noexcept
+{
+	m_ReloadTimer.Update(deltaTime);
+	if (m_ReloadTimer.IsExpired())
+	{
+		m_ReloadTimer.Reset();
+		FireBullet();
+	}
 }

@@ -16,7 +16,7 @@ Player::Player(Sprite& sprite, int scaleX, int scaleY) noexcept
 	AddTag("Player");
 	SetSpeedX(300.0f);
 	GetRectangle().x = (Globals::Window::Width / 2.0f) - GetRectangle().w;
-	GetRectangle().y = (Globals::Window::Height - Globals::Window::Height / 6.0f) - GetRectangle().h;
+	GetRectangle().y = Globals::Window::Height  - GetRectangle().h - 15;
 }
 
 void Player::Update(float deltaTime)

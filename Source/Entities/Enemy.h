@@ -26,8 +26,11 @@ private:
 
 private:
 	Timer m_ReloadTimer{ 2.0f };
+	Timer m_FlickerTimer{ 0.2f };
+	Timer m_HitTimer{ 1.0f };
 	int m_Lives;
 	
 private:
 	std::pair<float, float> CalculateBulletDir(const Bullet& bullet, float speedMultiplier) noexcept;
+	void Flicker(float deltaTime) noexcept;
 };

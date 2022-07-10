@@ -11,7 +11,7 @@ EnemyType& EnemySpawner::Spawn(Sprite& sprite, int x, int y) noexcept
 	EnemyType& enemy = Scene::GetInstance().CreateEntity<EnemyType>(sprite, 2.0f, 2.0f);
 	enemy.GetRectangle().x = x;
 	enemy.GetRectangle().y = y;
-	enemy.SetSpeedX(30.0f + (std::rand() / static_cast<float>(RAND_MAX)) * 60.0f);
+	enemy.SetSpeedX(30.0f + (std::rand() / static_cast<float>(RAND_MAX)) * 20.0f);
 	enemy.SetSpeedY(30.0f + (std::rand() / static_cast<float>(RAND_MAX)) * 60.0f);
 	return enemy;
 }
