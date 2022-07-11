@@ -33,4 +33,6 @@ private:
 private:
 	std::pair<float, float> CalculateBulletDir(const Bullet& bullet, float speedMultiplier) noexcept;
 	void Flicker(float deltaTime) noexcept;
+	void CollisionUpdate(float deltaTime) noexcept;
+	void ShootUpdate(float deltaTime) noexcept;
 };

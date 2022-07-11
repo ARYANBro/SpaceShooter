@@ -9,6 +9,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
 #include <cassert>
 #include <string>
@@ -24,6 +25,9 @@ static void SDLDeinit() noexcept
 {
 	SDL_DestroyWindow(Globals::Window::GetWindow());
 	SDL_DestroyRenderer(Globals::Renderer::Renderer);
+	Mix_Quit();
+	IMG_Quit();
+	TTF_Quit();	
 	SDL_Quit();
 }
 
@@ -69,6 +73,9 @@ static void SDLInit() noexcept
 
 	int mixInitResult = Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
 	CHECK_SDL_MIXER_ERROR(mixInitResult != -1);
+
+	int ttfInitResult = TTF_Init();
+	CHECK_SDL_TTF_ERROR(ttfInitResult == 0);
 
 	Mix_AllocateChannels(8);
 

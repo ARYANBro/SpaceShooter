@@ -10,6 +10,7 @@
 #include "DeltaTime.h"
 
 #include <list>
+#include <SDL2/SDL_ttf.h>
 
 class EnemySpawner;
 
@@ -44,6 +45,8 @@ private:
 	SpriteLoader m_SpriteLoader;
 	SoundLoader m_SoundLoader;
 	EnemySpawner* m_Spawner;
+	TTF_Font* m_Font;
+	SDL_Texture* m_Texture;
 
 	static Scene* s_Scene;
 

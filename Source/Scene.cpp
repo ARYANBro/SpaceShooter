@@ -9,16 +9,15 @@
 #include "EnemySpawner.h"
 
 #include <cassert>
-#include <iostream>
 
-static void RenderTexture(SDL_Texture* texture, SDL_Rect& texRect, const SDL_FRect& rectangle) noexcept
+static void RenderTexture(SDL_Texture* texture, SDL_Rect* texRect, const SDL_FRect& rectangle) noexcept
 {
-	SDL_RenderCopyF(Globals::Renderer::Renderer, texture, &texRect, &rectangle);
+	SDL_RenderCopyF(Globals::Renderer::Renderer, texture, texRect, &rectangle);
 }
 
 static void RenderSprite(Sprite& sprite, const SDL_FRect& rect) noexcept
 {
-	RenderTexture(sprite.GetTexture(), sprite.GetRectangle(), rect);
+	RenderTexture(sprite.GetTexture(), &sprite.GetRectangle(), rect);
 }
 
 static void Render(Entity& entity) noexcept
@@ -44,6 +43,11 @@ Scene::Scene() noexcept
 	LoadSprites();
 	LoadSounds();
 	LoadScene();
+
+	m_Font = TTF_OpenFont("Assets/Fonts/Roboto-Medium.ttf", 32);
+	SDL_Surface* surface = TTF_RenderText_Blended(m_Font, "Hello World", SDL_Colour{ .r = 255, .g = 255, .b = 255, .a = 255 });
+	m_Texture = SDL_CreateTextureFromSurface(Globals::Renderer::GetRenderer(), surface);
+	SDL_FreeSurface(surface);
 }
 
 Scene::~Scene() noexcept
@@ -56,12 +60,7 @@ Scene::~Scene() noexcept
 
 void Scene::Update() noexcept
 {
-	// double current = SDL_GetTicks() / 1000.0f;
-	// double deltaTime = current - m_Previous;
-	// m_Previous = current;
 	m_DeltaTime.Update();
-	
-
 	m_BackGround.Update(m_DeltaTime.GetDeltaTime());
 
 	if (!GetGameOver())
@@ -87,7 +86,18 @@ void Scene::Update() noexcept
 
 void Scene::Render() noexcept
 {
-	RenderTexture(m_BackGround.GetTexture(), m_BackGround.GetTextureRectangle(), m_BackGround.GetRectangle());
+	RenderTexture(m_BackGround.GetTexture(), &m_BackGround.GetTextureRectangle(), m_BackGround.GetRectangle());
+
+	int w, h;
+	SDL_QueryTexture(m_Texture, nullptr, nullptr, &w, &h);
+	SDL_FRect rect = {
+		.x = Globals::Window::Width / 2,
+		.y = Globals::Window::Height / 2,
+		.w = w,
+		.h = h
+	};
+
+	RenderTexture(m_Texture, nullptr, rect);
 
  	if (!GetGameOver())
 	{
