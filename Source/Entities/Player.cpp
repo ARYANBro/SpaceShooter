@@ -58,9 +58,9 @@ void Player::ProcessInput(float deltaTime) noexcept
 {
 	const uint8_t* state = SDL_GetKeyboardState(nullptr);
 
-	if (state[SDL_SCANCODE_A])
+	if (state[SDL_SCANCODE_J])
 		MoveLeft(deltaTime);
-	else if (state[SDL_SCANCODE_D])
+	else if (state[SDL_SCANCODE_L])
 		MoveRight(deltaTime);
 	else
 		MoveStraight();

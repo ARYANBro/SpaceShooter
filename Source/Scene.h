@@ -8,6 +8,7 @@
 #include "SoundLoader.h"
 #include "SpriteLoader.h"
 #include "DeltaTime.h"
+#include "FontRenderer.h"
 
 #include <list>
 #include <SDL2/SDL_ttf.h>
@@ -24,6 +25,8 @@ public:
 	void Render() noexcept;
 	void DestroyEntity(Entity* entity) noexcept;
 	void Reset() noexcept;
+	void ResetScore() noexcept { m_Score = 0; }
+	void IncreaseScore() noexcept { m_Score++; }
 
 	template<typename EntityType, typename... Args> requires std::is_base_of_v<Entity, EntityType>
 	EntityType& CreateEntity(Args&&... args) noexcept;
@@ -44,9 +47,11 @@ private:
 	ScrollingBackGround m_BackGround;
 	SpriteLoader m_SpriteLoader;
 	SoundLoader m_SoundLoader;
+	FontRenderer m_FontRenderer;
 	EnemySpawner* m_Spawner;
 	TTF_Font* m_Font;
 	SDL_Texture* m_Texture;
+	std::uint_least64_t m_Score = 0;
 
 	static Scene* s_Scene;
 

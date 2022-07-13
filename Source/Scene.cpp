@@ -44,10 +44,10 @@ Scene::Scene() noexcept
 	LoadSounds();
 	LoadScene();
 
-	m_Font = TTF_OpenFont("Assets/Fonts/Roboto-Medium.ttf", 32);
-	SDL_Surface* surface = TTF_RenderText_Blended(m_Font, "Hello World", SDL_Colour{ .r = 255, .g = 255, .b = 255, .a = 255 });
-	m_Texture = SDL_CreateTextureFromSurface(Globals::Renderer::GetRenderer(), surface);
-	SDL_FreeSurface(surface);
+	// m_Font = TTF_OpenFont("Assets/Fonts/Roboto-Medium.ttf", 28);
+	m_FontRenderer.SetActiveFont("Assets/Fonts/Roboto-Medium.ttf", 28);
+
+	m_FontRenderer.RenderText("Score: 0", { 0.0f, 0.0f });
 }
 
 Scene::~Scene() noexcept
@@ -86,18 +86,25 @@ void Scene::Update() noexcept
 
 void Scene::Render() noexcept
 {
+	// using namespace std::string_literals;
+
 	RenderTexture(m_BackGround.GetTexture(), &m_BackGround.GetTextureRectangle(), m_BackGround.GetRectangle());
 
-	int w, h;
-	SDL_QueryTexture(m_Texture, nullptr, nullptr, &w, &h);
-	SDL_FRect rect = {
-		.x = Globals::Window::Width / 2,
-		.y = Globals::Window::Height / 2,
-		.w = w,
-		.h = h
-	};
+	// std::string score = "Score: "s + std::to_string(m_Score);
+	// SDL_Surface* surface = TTF_RenderText_Blended(m_Font, score.c_str(), SDL_Colour{ .r = 255, .g = 255, .b = 255, .a = 255 });
+	// m_Texture = SDL_CreateTextureFromSurface(Globals::Renderer::GetRenderer(), surface);
+	// SDL_FreeSurface(surface);
 
-	RenderTexture(m_Texture, nullptr, rect);
+	// int w, h;
+	// SDL_QueryTexture(m_Texture, nullptr, nullptr, &w, &h);
+	// SDL_FRect rect = {
+	// 	.x = 0.0f,
+	// 	.y = 0.0f,
+	// 	.w = w,
+	// 	.h = h
+	// };
+
+	// RenderTexture(m_Texture, nullptr, rect);
 
  	if (!GetGameOver())
 	{
@@ -107,6 +114,8 @@ void Scene::Render() noexcept
 				::Render(*entity);
 		}
 	}
+
+	m_FontRenderer.RenderQueue();
 }
 
 void Scene::DestroyEntity(Entity* entity) noexcept
@@ -127,6 +136,7 @@ void Scene::Reset() noexcept
 	}
 
 	CreateEntity<Player>(m_SpriteLoader.GetSprite(SpriteType::Player), 2.0f, 2.0f);
+	ResetScore();
 	SetGameOver(true);
 }
 
