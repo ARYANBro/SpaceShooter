@@ -49,9 +49,8 @@ private:
 	SoundLoader m_SoundLoader;
 	FontRenderer m_FontRenderer;
 	EnemySpawner* m_Spawner;
-	TTF_Font* m_Font;
-	SDL_Texture* m_Texture;
 	std::uint_least64_t m_Score = 0;
+	std::uint_least64_t m_HighScore = 0;
 
 	static Scene* s_Scene;
 

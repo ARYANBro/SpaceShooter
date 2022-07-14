@@ -9,6 +9,8 @@
 #include "EnemySpawner.h"
 
 #include <cassert>
+#include <fstream>
+#include <iostream>
 
 static void RenderTexture(SDL_Texture* texture, SDL_Rect* texRect, const SDL_FRect& rectangle) noexcept
 {
@@ -40,14 +42,14 @@ Scene::Scene() noexcept
 	s_Scene = this;
 	m_Spawner = new EnemySpawner(2.0f, 3.0f);
 
+	std::ifstream in{ "HighScore.txt" };
+	if (!in)
+		std::cerr << "Could not open HighScore.txt for reading";
+	in >> m_HighScore;
+
 	LoadSprites();
 	LoadSounds();
 	LoadScene();
-
-	// m_Font = TTF_OpenFont("Assets/Fonts/Roboto-Medium.ttf", 28);
-	m_FontRenderer.SetActiveFont("Assets/Fonts/Roboto-Medium.ttf", 28);
-
-	m_FontRenderer.RenderText("Score: 0", { 0.0f, 0.0f });
 }
 
 Scene::~Scene() noexcept
@@ -56,12 +58,23 @@ Scene::~Scene() noexcept
 		delete entity;
 
 	delete m_Spawner;
+
+	std::ofstream out{ "HighScore.txt" };
+
+	if (!out)
+		assert(false && "Could not open HighScore.txt for writing");
+
+	out << m_HighScore;
 }
 
 void Scene::Update() noexcept
 {
 	m_DeltaTime.Update();
 	m_BackGround.Update(m_DeltaTime.GetDeltaTime());
+
+	m_HighScore = std::max(m_HighScore, m_Score);
+	m_FontRenderer.RenderText("Score: " + std::to_string(m_Score), { 0.0f, 0.0f });
+	m_FontRenderer.RenderText("High Score: " + std::to_string(m_HighScore), { Globals::Window::Width - 200, 0.0f });
 
 	if (!GetGameOver())
 	{
@@ -86,25 +99,7 @@ void Scene::Update() noexcept
 
 void Scene::Render() noexcept
 {
-	// using namespace std::string_literals;
-
 	RenderTexture(m_BackGround.GetTexture(), &m_BackGround.GetTextureRectangle(), m_BackGround.GetRectangle());
-
-	// std::string score = "Score: "s + std::to_string(m_Score);
-	// SDL_Surface* surface = TTF_RenderText_Blended(m_Font, score.c_str(), SDL_Colour{ .r = 255, .g = 255, .b = 255, .a = 255 });
-	// m_Texture = SDL_CreateTextureFromSurface(Globals::Renderer::GetRenderer(), surface);
-	// SDL_FreeSurface(surface);
-
-	// int w, h;
-	// SDL_QueryTexture(m_Texture, nullptr, nullptr, &w, &h);
-	// SDL_FRect rect = {
-	// 	.x = 0.0f,
-	// 	.y = 0.0f,
-	// 	.w = w,
-	// 	.h = h
-	// };
-
-	// RenderTexture(m_Texture, nullptr, rect);
 
  	if (!GetGameOver())
 	{
@@ -161,6 +156,7 @@ void Scene::LoadSounds() noexcept
 
 void Scene::LoadScene() noexcept
 {
+	m_FontRenderer.SetActiveFont("Assets/Fonts/Roboto-Medium.ttf", 28);
 	m_BackGround.Init("Assets/Textures/space_shooter_pack/Graphics/backgrounds/desert-backgorund-looped.png", 1, 1);
 	m_SoundLoader.PlayMusic();
 	m_SpriteLoader.GetSprite(SpriteType::Player).SetFrameX(2);

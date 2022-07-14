@@ -52,8 +52,8 @@ void FontRenderer::RenderQueue() noexcept
     for (auto& t : m_TextRenderQueue)
     {
         RenderTexture(t.first, nullptr, t.second);
-        // SDL_DestroyTexture(t.first);
+        SDL_DestroyTexture(t.first);
     }
 
-    // m_TextRenderQueue.clear();
+    m_TextRenderQueue.clear();
 }

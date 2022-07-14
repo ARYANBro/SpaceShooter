@@ -25,7 +25,7 @@ void Enemy::Update(float deltaTime)
 {
 	SetActiveFrameX((SDL_GetTicks() / 150) % 2);
 	GetRectangle().y += GetSpeedY() * deltaTime;
-	GetRectangle().y = std::min(GetRectangle().y, (Globals::Window::Height - Globals::Window::Height / 3.0f));
+	GetRectangle().y = std::min(GetRectangle().y, (Globals::Window::Height - Globals::Window::Height / 2.5f));
 
 	ShootUpdate(deltaTime);
 
