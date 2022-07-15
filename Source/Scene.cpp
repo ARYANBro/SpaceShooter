@@ -1,12 +1,8 @@
 #include "Scene.h"
 
 #include "Sprite.h"
-#include "Entities/Player.h"
-#include "Entities/Enemy.h"
-#include "Entities/Bullet.h"
+#include "Globals.h"
 #include "Entities/PhysicsEntity.h"
-#include "Entities/Explosion.h"
-#include "EnemySpawner.h"
 
 #include <cassert>
 #include <fstream>
@@ -34,19 +30,44 @@ static bool CheckCollision(SDL_FRect rect1, SDL_FRect rect2) noexcept
 	return std::max(rect1.x, rect2.x) < std::min(rect1.x + rect1.w, rect2.x + rect2.w) && std::max(rect1.y, rect2.y) < std::min(rect1.y + rect1.h, rect2.y + rect2.h);
 }
 
+static void ReadHighScores(const std::string& filePath, HighScoreTable& inTable) noexcept
+{
+	std::ifstream in{ filePath.c_str() };
+
+	if (!in)
+		std::cerr << "Could not open " + filePath + " HighScore.txt for reading\n";
+
+	std::array<HighScore, 8> highScores;
+	int index = 0;
+
+	while (in)
+	{
+		int score;
+		in >> score;
+		highScores[index++].SetScore(score);
+	}
+
+	inTable.Init(highScores);
+}
+
+static void WriteHighScores(const std::string& filePath, const HighScoreTable& table)  noexcept
+{
+	std::ofstream out{ filePath.c_str() };
+
+	if (!out)
+		std::cerr << "Could not open " + filePath + " for writing\n";
+
+	for (const HighScore& h : table.GetHighScores())
+		out << h.GetScore() << '\n';
+}
+
 Scene* Scene::s_Scene = nullptr;
 
 Scene::Scene() noexcept
-	: m_Spawner(nullptr)
 {
 	s_Scene = this;
-	m_Spawner = new EnemySpawner(2.0f, 3.0f);
 
-	std::ifstream in{ "HighScore.txt" };
-	if (!in)
-		std::cerr << "Could not open HighScore.txt for reading";
-	in >> m_HighScore;
-
+	ReadHighScores("HighScore.txt", m_HighScoreTable);
 	LoadSprites();
 	LoadSounds();
 	LoadScene();
@@ -57,51 +78,34 @@ Scene::~Scene() noexcept
 	for (Entity* entity : m_Entities)
 		delete entity;
 
-	delete m_Spawner;
-
-	std::ofstream out{ "HighScore.txt" };
-
-	if (!out)
-		assert(false && "Could not open HighScore.txt for writing");
-
-	out << m_HighScore;
+	WriteHighScores("HighScore.txt", m_HighScoreTable);
 }
 
-void Scene::Update() noexcept
+DeltaTime Scene::Update() noexcept
 {
 	m_DeltaTime.Update();
 	m_BackGround.Update(m_DeltaTime.GetDeltaTime());
+	m_HighScoreTable.Update(m_DeltaTime.GetDeltaTime());
+	m_TextRenderer.RenderText("Score: " + std::to_string(m_Score), { 0.0f, 0.0f });
 
-	m_HighScore = std::max(m_HighScore, m_Score);
-	m_FontRenderer.RenderText("Score: " + std::to_string(m_Score), { 0.0f, 0.0f });
-	m_FontRenderer.RenderText("High Score: " + std::to_string(m_HighScore), { Globals::Window::Width - 200, 0.0f });
-
-	if (!GetGameOver())
+	if (m_UpdateEntities)
 	{
-		m_Spawner->Update(m_DeltaTime.GetDeltaTime());
 		PhysicsUpdate();
 
 		for (Entity* entity : m_Entities)
 			entity->Update(m_DeltaTime.GetDeltaTime());
 	}
-	else
-	{
-		m_ResetTimer.Update(m_DeltaTime.GetDeltaTime());
-		if (m_ResetTimer.IsExpired())
-		{
-			SetGameOver(false);
-			m_ResetTimer.Reset();
-		}
-	}
 
 	DeleteQueue();
+
+	return m_DeltaTime;
 }
 
 void Scene::Render() noexcept
 {
 	RenderTexture(m_BackGround.GetTexture(), &m_BackGround.GetTextureRectangle(), m_BackGround.GetRectangle());
 
- 	if (!GetGameOver())
+ 	if (m_RenderEntities)
 	{
 		for (Entity* entity : m_Entities)
 		{
@@ -110,7 +114,7 @@ void Scene::Render() noexcept
 		}
 	}
 
-	m_FontRenderer.RenderQueue();
+	m_TextRenderer.RenderQueue();
 }
 
 void Scene::DestroyEntity(Entity* entity) noexcept
@@ -130,9 +134,13 @@ void Scene::Reset() noexcept
 			DestroyEntity(entity);
 	}
 
-	CreateEntity<Player>(m_SpriteLoader.GetSprite(SpriteType::Player), 2.0f, 2.0f);
 	ResetScore();
-	SetGameOver(true);
+}
+
+void Scene::IncreaseScore() noexcept
+{
+	m_Score++;
+	m_HighScoreTable.TryAddHighScore(m_Score);
 }
 
 void Scene::LoadSprites() noexcept
@@ -156,11 +164,10 @@ void Scene::LoadSounds() noexcept
 
 void Scene::LoadScene() noexcept
 {
-	m_FontRenderer.SetActiveFont("Assets/Fonts/Roboto-Medium.ttf", 28);
+	m_TextRenderer.SetActiveFont("Assets/Fonts/Roboto-Medium.ttf", 28);
 	m_BackGround.Init("Assets/Textures/space_shooter_pack/Graphics/backgrounds/desert-backgorund-looped.png", 1, 1);
 	m_SoundLoader.PlayMusic();
 	m_SpriteLoader.GetSprite(SpriteType::Player).SetFrameX(2);
-	CreateEntity<Player>(m_SpriteLoader.GetSprite(SpriteType::Player), 2.0f, 2.0f);
 }
 
 void Scene::PhysicsUpdate() noexcept

@@ -4,6 +4,7 @@
 #include "Entities/SmallEnemy.h"
 #include "Entities/MediumEnemy.h"
 #include "Entities/BigEnemy.h"
+#include "Globals.h"
 
 template<typename EnemyType>
 EnemyType& EnemySpawner::Spawn(Sprite& sprite, int x, int y) noexcept

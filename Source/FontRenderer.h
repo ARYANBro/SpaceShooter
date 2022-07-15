@@ -5,7 +5,7 @@
 #include <string>
 #include <list>
 
-class FontRenderer
+class TextRenderer
 {
 public:
     void SetActiveFont(const std::string& filePath, int fontSize = 24) noexcept;

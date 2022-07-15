@@ -21,7 +21,7 @@ static void Render(Entity& entity) noexcept
 	RenderSprite(entity.GetSprite(), entity.GetRectangle());
 }
 
-void FontRenderer::SetActiveFont(const std::string& filePath, int fontSize) noexcept
+void TextRenderer::SetActiveFont(const std::string& filePath, int fontSize) noexcept
 {
     if (m_ActiveFont != nullptr)
         TTF_CloseFont(m_ActiveFont);
@@ -29,7 +29,7 @@ void FontRenderer::SetActiveFont(const std::string& filePath, int fontSize) noex
     m_ActiveFont = TTF_OpenFont(filePath.c_str(), fontSize);
 }
 
-void FontRenderer::RenderText(const std::string& text, std::pair<float, float> position, SDL_Colour colour) noexcept
+void TextRenderer::RenderText(const std::string& text, std::pair<float, float> position, SDL_Colour colour) noexcept
 {
     SDL_Surface* surface = TTF_RenderText_Blended(m_ActiveFont, text.c_str(), colour);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(Globals::Renderer::GetRenderer(), surface);
@@ -47,7 +47,7 @@ void FontRenderer::RenderText(const std::string& text, std::pair<float, float> p
     m_TextRenderQueue.push_back({ texture, rect });
 }
 
-void FontRenderer::RenderQueue() noexcept
+void TextRenderer::RenderQueue() noexcept
 {
     for (auto& t : m_TextRenderQueue)
     {

@@ -5,6 +5,7 @@
 #include "EnemySpawner.h"
 #include "Globals.h"
 #include "Scene.h"
+#include "GameScene.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -98,7 +99,7 @@ int main()
 {
 	SDLInit();
 
-	Scene scene;
+	GameScene scene;
 
 	while (g_Running)
 	{
