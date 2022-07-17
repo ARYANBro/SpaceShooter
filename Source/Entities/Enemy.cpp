@@ -7,6 +7,7 @@
 #include "Explosion.h"
 #include "SpriteLoader.h"
 #include "SoundLoader.h"
+#include "GameScene.h"
 
 #include <SDL2/SDL_mixer.h>
 
@@ -46,7 +47,10 @@ void Enemy::OnCollision(const Entity& entity)
 				Explosion& explosion = Scene::GetInstance().CreateEntity<Explosion>(Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Explosion), 3, 3);
 				explosion.GetRectangle().x = GetRectangle().x;
 				explosion.GetRectangle().y = GetRectangle().y;
-				Scene::GetInstance().IncreaseScore();
+
+				if (auto gameScene = dynamic_cast<GameScene*>(&Scene::GetInstance()))
+					gameScene->IncreaseScore();
+
 				Scene::GetInstance().DestroyEntity(this);
 			}
 		}

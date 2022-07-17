@@ -13,7 +13,7 @@ public:
 	Enemy(Sprite& sprite, int scaleX = 1, int scaleY = 1, int lives = 1) noexcept
 		: PhysicsEntity(sprite, scaleX, scaleY), m_Lives(lives)
 	{
-		AddTag("Enemy");	
+		AddTag("Enemy");
 	}
 
 	virtual void Update(float deltaTime) override;

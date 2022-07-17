@@ -56,7 +56,7 @@ void Player::OnCollision(const Entity& entity)
 
 void Player::ProcessInput(float deltaTime) noexcept
 {
-	const uint8_t* state = SDL_GetKeyboardState(nullptr);
+ 	const uint8_t* state = SDL_GetKeyboardState(nullptr);
 
 	if (state[SDL_SCANCODE_J])
 		MoveLeft(deltaTime);

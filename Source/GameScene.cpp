@@ -3,6 +3,7 @@
 #include "EnemySpawner.h"
 #include "Entities/Player.h"
 
+
 GameScene::GameScene() noexcept
     : m_Spawner(nullptr)
 {
@@ -19,17 +20,20 @@ void GameScene::Reset() noexcept
 {
     Scene::Reset();
     SetGameOver(true);
+    ResetScore();
 	CreateEntity<Player>(GetSpriteLoader().GetSprite(SpriteType::Player), 2.0f, 2.0f);
 }
 
-DeltaTime GameScene::Update() noexcept
+void GameScene::Update(float deltaTime) noexcept
 {
-    DeltaTime deltaTime = Scene::Update();
+    Scene::Update(deltaTime);
+	GetTextRenderer().RenderText("Score: " + std::to_string(m_Score), { 0.0f, 0.0f });
+
     if (m_GameOver)
     {
         SetRenderEntities(false);
         SetUpdateEntities(false);
-        m_ResetTimer.Update(deltaTime.GetDeltaTime());
+        m_ResetTimer.Update(deltaTime);
 
 		if (m_ResetTimer.IsExpired())
 		{
@@ -40,9 +44,12 @@ DeltaTime GameScene::Update() noexcept
 		}
     }
     else
-    {
-		m_Spawner->Update(deltaTime.GetDeltaTime());
-    }
+		m_Spawner->Update(deltaTime);
 
-    return deltaTime;
+    // return deltaTime;
+}
+
+void GameScene::IncreaseScore() noexcept
+{
+    m_Score++;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <string>
 
 #define CHECK_SDL_ERROR_FUNC(trueCond, getError)		\
 if (!(trueCond))										\

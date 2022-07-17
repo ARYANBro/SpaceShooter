@@ -30,44 +30,12 @@ static bool CheckCollision(SDL_FRect rect1, SDL_FRect rect2) noexcept
 	return std::max(rect1.x, rect2.x) < std::min(rect1.x + rect1.w, rect2.x + rect2.w) && std::max(rect1.y, rect2.y) < std::min(rect1.y + rect1.h, rect2.y + rect2.h);
 }
 
-static void ReadHighScores(const std::string& filePath, HighScoreTable& inTable) noexcept
-{
-	std::ifstream in{ filePath.c_str() };
-
-	if (!in)
-		std::cerr << "Could not open " + filePath + " HighScore.txt for reading\n";
-
-	std::array<HighScore, 8> highScores;
-	int index = 0;
-
-	while (in)
-	{
-		int score;
-		in >> score;
-		highScores[index++].SetScore(score);
-	}
-
-	inTable.Init(highScores);
-}
-
-static void WriteHighScores(const std::string& filePath, const HighScoreTable& table)  noexcept
-{
-	std::ofstream out{ filePath.c_str() };
-
-	if (!out)
-		std::cerr << "Could not open " + filePath + " for writing\n";
-
-	for (const HighScore& h : table.GetHighScores())
-		out << h.GetScore() << '\n';
-}
-
 Scene* Scene::s_Scene = nullptr;
 
 Scene::Scene() noexcept
 {
 	s_Scene = this;
 
-	ReadHighScores("HighScore.txt", m_HighScoreTable);
 	LoadSprites();
 	LoadSounds();
 	LoadScene();
@@ -77,28 +45,21 @@ Scene::~Scene() noexcept
 {
 	for (Entity* entity : m_Entities)
 		delete entity;
-
-	WriteHighScores("HighScore.txt", m_HighScoreTable);
 }
 
-DeltaTime Scene::Update() noexcept
+void Scene::Update(float deltaTime) noexcept
 {
-	m_DeltaTime.Update();
-	m_BackGround.Update(m_DeltaTime.GetDeltaTime());
-	m_HighScoreTable.Update(m_DeltaTime.GetDeltaTime());
-	m_TextRenderer.RenderText("Score: " + std::to_string(m_Score), { 0.0f, 0.0f });
+	m_BackGround.Update(deltaTime);
 
 	if (m_UpdateEntities)
 	{
 		PhysicsUpdate();
 
 		for (Entity* entity : m_Entities)
-			entity->Update(m_DeltaTime.GetDeltaTime());
+			entity->Update(deltaTime);
 	}
 
 	DeleteQueue();
-
-	return m_DeltaTime;
 }
 
 void Scene::Render() noexcept
@@ -133,15 +94,8 @@ void Scene::Reset() noexcept
 		if (!entity->IsNull())
 			DestroyEntity(entity);
 	}
-
-	ResetScore();
 }
 
-void Scene::IncreaseScore() noexcept
-{
-	m_Score++;
-	m_HighScoreTable.TryAddHighScore(m_Score);
-}
 
 void Scene::LoadSprites() noexcept
 {

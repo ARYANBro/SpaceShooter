@@ -19,14 +19,12 @@ public:
 	Scene() noexcept;
 
 	~Scene() noexcept;
-	virtual DeltaTime Update() noexcept;
+	virtual void Update(float deltaTime) noexcept;
 	virtual void Render() noexcept;
 	void DestroyEntity(Entity* entity) noexcept;
 	virtual void Reset() noexcept;
-	void ResetScore() noexcept { m_Score = 0; }
 	void SetUpdateEntities(bool value) noexcept { m_UpdateEntities = value; }
 	void SetRenderEntities(bool value) noexcept { m_RenderEntities = value; }
-	void IncreaseScore() noexcept;
 
 	template<typename EntityType, typename... Args> requires std::is_base_of_v<Entity, EntityType>
 	EntityType& CreateEntity(Args&&... args) noexcept;
@@ -40,15 +38,12 @@ public:
 
 private:
 	bool m_UpdateEntities = true, m_RenderEntities = true;
-	DeltaTime m_DeltaTime;
 	std::list<Entity*> m_Entities;
 	std::list<Entity*> m_DelQueue;
 	ScrollingBackGround m_BackGround;
 	SpriteLoader m_SpriteLoader;
 	SoundLoader m_SoundLoader;
 	TextRenderer m_TextRenderer;
-	HighScoreTable m_HighScoreTable;
-	std::uint_least64_t m_Score = 0;
 
 	static Scene* s_Scene;
 
