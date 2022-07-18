@@ -15,14 +15,15 @@ Game::Game() noexcept
 	m_TimeStepMs = 1000.0f / GetDisplayMode().refresh_rate;
 	m_TimeAccumulated = 0;
 
-	m_Scene = new MenuScene();
 	m_Type = SceneType::MenuScene;
+	m_Scene = new MenuScene();
 }
 
 Game::~Game() noexcept
 {
     delete m_Scene;
 	SDLDeinit();
+
 }
 
 void Game::Update() noexcept
@@ -127,10 +128,9 @@ void Game::OnKeyDown(const SDL_KeyboardEvent& event) noexcept
 			if (m_Type == SceneType::GameScene)
 			{
 				std::uint_least64_t score = static_cast<GameScene*>(m_Scene)->GetScore();
-				
+				m_Type = SceneType::MenuScene;
 				delete m_Scene;
 				m_Scene = new MenuScene();
-				m_Type = SceneType::MenuScene;
 				static_cast<MenuScene*>(m_Scene)->GetHighScoreTable().TryAddHighScore(score);
 			}
 			else
@@ -168,4 +168,6 @@ void Game::ProcessEvents(SDL_Event& event) noexcept
         default:
             break;
     }
+
+	m_Scene->ProcessEvents(event);
 }

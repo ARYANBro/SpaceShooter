@@ -7,7 +7,7 @@ class MenuScene : public Scene
 {
 public:
     MenuScene() noexcept;
-    ~MenuScene() noexcept;
+    virtual ~MenuScene() noexcept override;
     virtual void Update(float deltaTime) noexcept override;
 
     const HighScoreTable& GetHighScoreTable() const noexcept { return m_HighScoreTable; }
@@ -15,4 +15,7 @@ public:
 
 private:
     HighScoreTable m_HighScoreTable;
+
+private:
+    void GetPlayerName() noexcept;
 };

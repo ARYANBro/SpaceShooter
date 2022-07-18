@@ -11,16 +11,15 @@
 #include <list>
 #include <SDL2/SDL_ttf.h>
 
-class EnemySpawner;
-
 class Scene
 {
 public:
 	Scene() noexcept;
 
-	~Scene() noexcept;
+	virtual ~Scene() noexcept;
 	virtual void Update(float deltaTime) noexcept;
 	virtual void Render() noexcept;
+	virtual void ProcessEvents(SDL_Event& event) noexcept {}
 	void DestroyEntity(Entity* entity) noexcept;
 	virtual void Reset() noexcept;
 	void SetUpdateEntities(bool value) noexcept { m_UpdateEntities = value; }
@@ -38,8 +37,8 @@ public:
 
 private:
 	bool m_UpdateEntities = true, m_RenderEntities = true;
-	std::list<Entity*> m_Entities;
-	std::list<Entity*> m_DelQueue;
+	std::list<Entity*> m_Entities = { nullptr };
+	std::list<Entity*> m_DelQueue = { nullptr };
 	ScrollingBackGround m_BackGround;
 	SpriteLoader m_SpriteLoader;
 	SoundLoader m_SoundLoader;

@@ -10,8 +10,8 @@
 #include <cassert>
 #include <iostream>
 
-Player::Player(Sprite& sprite, int scaleX, int scaleY) noexcept
-	: PhysicsEntity(sprite, scaleX, scaleY)
+Player::Player(Sprite& sprite, int scaleX, int scaleY, const std::string& name) noexcept
+	: PhysicsEntity(sprite, scaleX, scaleY), m_Name(name)
 {
 	AddTag("Player");
 	SetSpeedX(300.0f);

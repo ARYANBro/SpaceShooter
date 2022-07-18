@@ -56,7 +56,10 @@ void Scene::Update(float deltaTime) noexcept
 		PhysicsUpdate();
 
 		for (Entity* entity : m_Entities)
-			entity->Update(deltaTime);
+		{
+			if (entity)
+				entity->Update(deltaTime);
+		}
 	}
 
 	DeleteQueue();
@@ -128,14 +131,20 @@ void Scene::PhysicsUpdate() noexcept
 {
 	for (Entity* e1 : m_Entities)
 	{
-		if (e1->CheckTag("PhysicsEntity"))
+		if (e1)
 		{
-			for (Entity* e2 : m_Entities)
+			if (e1->CheckTag("PhysicsEntity"))
 			{
-				if (e2->CheckTag("PhysicsEntity") && e2 != e1)
+				for (Entity* e2 : m_Entities)
 				{
-					if (CheckCollision(e2->GetRectangle(), e1->GetRectangle()))
-						static_cast<PhysicsEntity*>(e1)->OnCollision(*e2);
+					if (e2)
+					{
+						if (e2->CheckTag("PhysicsEntity") && e2 != e1)
+						{
+							if (CheckCollision(e2->GetRectangle(), e1->GetRectangle()))
+								static_cast<PhysicsEntity*>(e1)->OnCollision(*e2);
+						}
+					}
 				}
 			}
 		}
