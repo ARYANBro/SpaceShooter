@@ -3,6 +3,7 @@
 #include "Defines.h"
 #include "MenuScene.h"
 #include "GameScene.h"
+#include "Entities/Player.h"
 
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_image.h>
@@ -127,11 +128,19 @@ void Game::OnKeyDown(const SDL_KeyboardEvent& event) noexcept
 		case SDL_SCANCODE_ESCAPE:
 			if (m_Type == SceneType::GameScene)
 			{
-				std::uint_least64_t score = static_cast<GameScene*>(m_Scene)->GetScore();
+				GameScene* gameScene = static_cast<GameScene*>(m_Scene);
+
+				std::uint_least64_t score = gameScene->GetScore();
+				Player* player = gameScene->GetPlayer();
+				std::string playerName;
+
+				if (player)
+					playerName = player->GetName();
+
 				m_Type = SceneType::MenuScene;
 				delete m_Scene;
 				m_Scene = new MenuScene();
-				static_cast<MenuScene*>(m_Scene)->GetHighScoreTable().TryAddHighScore(score);
+				static_cast<MenuScene*>(m_Scene)->GetHighScoreTable().TryAddHighScore(player->GetName(), score);
 			}
 			else
 			{

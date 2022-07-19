@@ -19,10 +19,13 @@ GameScene::~GameScene()
 
 void GameScene::Reset() noexcept
 {
+    std::string playerName;
+    if (Player* player = GetPlayer())
+        playerName = player->GetName();
     Scene::Reset();
     SetGameOver(true);
     ResetScore();
-	CreateEntity<Player>(GetSpriteLoader().GetSprite(SpriteType::Player), 2.0f, 2.0f);
+	CreateEntity<Player>(GetSpriteLoader().GetSprite(SpriteType::Player), 2.0f, 2.0f, playerName);
 }
 
 void GameScene::Update(float deltaTime) noexcept
@@ -47,8 +50,8 @@ void GameScene::Update(float deltaTime) noexcept
     {
         SetRenderEntities(false);
         SetUpdateEntities(false);
-        GetTextRenderer().RenderText("Enter your name:", { Globals::Window::Width / 2.0f, Globals::Window::Height / 2.0f - 200});
-        GetTextRenderer().RenderText(m_InputText, { Globals::Window::Width / 2.0f, Globals::Window::Height / 2.0f - 50.0f});
+        GetTextRenderer().RenderText("Enter your name:", { Globals::Window::Width / 2.0f, Globals::Window::Height / 2.0f - 200}, Align::Centre);
+        GetTextRenderer().RenderText(m_InputText, { Globals::Window::Width / 2.0f, Globals::Window::Height / 2.0f - 50.0f}, Align::Centre);
     }
     else
     {
@@ -58,13 +61,8 @@ void GameScene::Update(float deltaTime) noexcept
 
     	GetTextRenderer().RenderText("Score: " + std::to_string(m_Score), { 0.0f, 0.0f });
 
-        static auto found = std::find_if(GetEntities().begin(), GetEntities().end(), [](Entity* entity) { return entity->CheckTag("Player"); });
-        if (found != GetEntities().end())
-        {
-            const std::string& name = static_cast<Player*>((*found))->GetName();
-            GetTextRenderer().RenderText("Player Name: " + name, { 0.0f, 100.0f });
-
-        }
+        if (Player* player = GetPlayer())
+            GetTextRenderer().RenderText("Player Name: " + player->GetName(), { 0.0f, 100.0f });
     }
 }
 
@@ -94,9 +92,10 @@ void GameScene::ProcessEvents(SDL_Event& event) noexcept
 
                     case SDL_SCANCODE_RETURN:
                     {
-                        auto found = std::find_if(GetEntities().begin(), GetEntities().end(), [](Entity* entity) { return entity->CheckTag("Player"); });
-                        if (found != GetEntities().end())
-                            static_cast<Player*>((*found))->SetName(m_InputText);
+                        Player* player = GetPlayer();
+
+                        if (player)
+                            player->SetName(m_InputText);
 
                         m_GetInput = false;
                         break;
@@ -112,4 +111,13 @@ void GameScene::ProcessEvents(SDL_Event& event) noexcept
 void GameScene::IncreaseScore() noexcept
 {
     m_Score++;
+}
+
+Player* GameScene::GetPlayer() noexcept
+{
+    auto found = std::find_if(GetEntities().begin(), GetEntities().end(), [](Entity* entity) { return entity->CheckTag("Player"); });
+    if (found != GetEntities().end())
+        return static_cast<Player*>(*found);
+    
+    return nullptr;
 }

@@ -5,7 +5,7 @@
 #include "SoundLoader.h"
 #include "SpriteLoader.h"
 #include "DeltaTime.h"
-#include "FontRenderer.h"
+#include "TextRenderer.h"
 #include "HighScore.h"
 
 #include <list>

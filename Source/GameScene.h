@@ -5,6 +5,7 @@
 #include "HighScore.h"
 
 class EnemySpawner;
+class Player;
 
 class GameScene : public Scene
 {
@@ -18,6 +19,7 @@ public:
     void ResetScore() noexcept { m_Score = 0; }
 
 	void IncreaseScore() noexcept;
+    Player* GetPlayer() noexcept;
 	bool GetGameOver() const noexcept { return m_GameOver; }
     std::uint_least64_t GetScore() const noexcept { return m_Score; }
 

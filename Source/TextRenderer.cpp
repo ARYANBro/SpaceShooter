@@ -1,4 +1,4 @@
-#include "FontRenderer.h"
+#include "TextRenderer.h"
 
 #include "Globals.h"
 #include "Sprite.h"
@@ -29,7 +29,7 @@ void TextRenderer::SetActiveFont(const std::string& filePath, int fontSize) noex
     m_ActiveFont = TTF_OpenFont(filePath.c_str(), fontSize);
 }
 
-void TextRenderer::RenderText(const std::string& text, std::pair<float, float> position, SDL_Colour colour) noexcept
+void TextRenderer::RenderText(const std::string& text, std::pair<float, float> position, Align alignment, SDL_Colour colour) noexcept
 {
     SDL_Surface* surface = TTF_RenderText_Blended(m_ActiveFont, text.c_str(), colour);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(Globals::Renderer::GetRenderer(), surface);
@@ -43,6 +43,21 @@ void TextRenderer::RenderText(const std::string& text, std::pair<float, float> p
         .w = w,
         .h = h
     };
+
+
+    switch (alignment)
+    {
+        case Align::Left:
+        break;
+
+        case Align::Centre:
+        rect.x -= w / 2.0f;
+        break;
+
+        case Align::Right:
+        rect.x -= w;
+        break;
+    }
 
     m_TextRenderQueue.push_back({ texture, rect });
 }

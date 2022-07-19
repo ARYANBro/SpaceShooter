@@ -13,10 +13,13 @@ static void ReadHighScores(const std::string& filePath, HighScoreTable& inTable)
 	std::array<HighScore, 8> highScores;
 	int index = 0;
 
-	while (in)
+	in.seekg(std::ifstream::beg);
+	while (in && index < highScores.size())
 	{
 		int score;
-		in >> score;
+		std::string playerName;
+		in >> playerName >> score;
+		highScores[index].SetPlayerName(playerName);
 		highScores[index++].SetScore(score);
 	}
 
@@ -31,7 +34,7 @@ static void WriteHighScores(const std::string& filePath, const HighScoreTable& t
 		std::cerr << "Could not open " + filePath + " for writing\n";
 
 	for (const HighScore& h : table.GetHighScores())
-		out << h.GetScore() << '\n';
+		out << h.GetPlayerName() << ' ' << h.GetScore() << '\n';
 }
 
 MenuScene::MenuScene() noexcept
