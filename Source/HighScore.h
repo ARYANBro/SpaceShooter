@@ -21,7 +21,7 @@ class HighScoreTable
 public:
     void Init(const std::array<HighScore, 8> highScores) noexcept { m_HighScores = highScores; }
 
-    void TryAddHighScore(const std::string& playerName, int score) noexcept;
+    bool TryAddHighScore(const std::string& playerName, int score) noexcept;
     void Update(float deltaTime) noexcept;
 
     std::array<HighScore, 8>& GetHighScores() noexcept { return m_HighScores; }
@@ -29,4 +29,7 @@ public:
 
 private:
     std::array<HighScore, 8> m_HighScores;
+
+private:
+    std::string FormTextToDisplay(const std::string& playerName, std::size_t score, std::size_t totalTexSize = 36) const noexcept;
 };

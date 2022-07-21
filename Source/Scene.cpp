@@ -99,7 +99,6 @@ void Scene::Reset() noexcept
 	}
 }
 
-
 void Scene::LoadSprites() noexcept
 {
 	m_SpriteLoader.Load(SpriteType::Explosion, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/explosion.png", { 5, 1 });

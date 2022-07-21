@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "Timer.h"
 #include "HighScore.h"
+#include "TextInput.h"
 
 class EnemySpawner;
 class Player;
@@ -28,9 +29,9 @@ private:
     Timer m_ResetTimer{ 2.0f };
     EnemySpawner* m_Spawner;
 	std::uint_least64_t m_Score = 0;
-    std::string m_InputText;
-    bool m_GetInput = false;
+    TextInput m_TextInput;
 
 private:
 	void SetGameOver(bool gameOver) noexcept { m_GameOver = gameOver; }
+    void RenderHud() noexcept;
 };

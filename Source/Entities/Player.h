@@ -17,6 +17,7 @@ public:
 	virtual void OnCollision(const Entity& entity) override;
 	void SetName(const std::string& name) noexcept { m_Name = name; }
 	const std::string& GetName() const noexcept { return m_Name; }
+	std::string& GetName() noexcept { return m_Name; }
 
 private:
 	Timer m_ReloadTimer{ 0.5 };
