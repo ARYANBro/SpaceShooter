@@ -73,8 +73,11 @@ void Scene::Render() noexcept
 	{
 		for (Entity* entity : m_Entities)
 		{
-			if (!entity->Hidden())
-				::Render(*entity);
+			if (entity)
+			{
+				if (!entity->Hidden())
+					::Render(*entity);
+			}
 		}
 	}
 

@@ -11,7 +11,7 @@ class Player;
 class GameScene : public Scene
 {
 public:
-    GameScene() noexcept;
+    GameScene(const std::string& playerName) noexcept;
     virtual ~GameScene() noexcept override;
 
     virtual void Reset() noexcept override;
@@ -29,7 +29,6 @@ private:
     Timer m_ResetTimer{ 2.0f };
     EnemySpawner* m_Spawner;
 	std::uint_least64_t m_Score = 0;
-    TextInput m_TextInput;
 
 private:
 	void SetGameOver(bool gameOver) noexcept { m_GameOver = gameOver; }

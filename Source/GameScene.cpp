@@ -3,12 +3,11 @@
 #include "EnemySpawner.h"
 #include "Entities/Player.h"
 
-GameScene::GameScene() noexcept
+GameScene::GameScene(const std::string& playerName) noexcept
     : m_Spawner(nullptr)
 {
 	m_Spawner = new EnemySpawner(2.0f, 3.0f);
-    Player& player = CreateEntity<Player>(GetSpriteLoader().GetSprite(SpriteType::Player), 2.0f, 2.0f);
-    m_TextInput.GetInput(player.GetName(), 8);
+    Player& player = CreateEntity<Player>(GetSpriteLoader().GetSprite(SpriteType::Player), 2.0f, 2.0f, playerName);
 }
 
 GameScene::~GameScene()
@@ -31,11 +30,7 @@ void GameScene::Update(float deltaTime) noexcept
 {
     Scene::Update(deltaTime);
 
-    if (!m_TextInput.IsGettingInput())
-    {
-        RenderHud();
-    }
-
+    RenderHud();
     if (m_GameOver)
     {
         SetRenderEntities(false);
@@ -56,13 +51,10 @@ void GameScene::Update(float deltaTime) noexcept
         SetRenderEntities(true);
         SetUpdateEntities(true);
     }
-
-    m_TextInput.Render({ Globals::Window::Width / 2.0f, Globals::Window::Height / 2.0f - 50.0f}, Align::Centre);
 }
 
 void GameScene::ProcessEvents(SDL_Event& event) noexcept
 {
-    m_TextInput.ProcessEvent(event);
 }
 
 void GameScene::IncreaseScore() noexcept

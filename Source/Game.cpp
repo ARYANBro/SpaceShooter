@@ -3,6 +3,7 @@
 #include "Defines.h"
 #include "MenuScene.h"
 #include "GameScene.h"
+#include "TextInputScene.h"
 #include "Entities/Player.h"
 
 #include <SDL2/SDL_mixer.h>
@@ -140,16 +141,28 @@ void Game::OnKeyDown(const SDL_KeyboardEvent& event) noexcept
 				m_Type = SceneType::MenuScene;
 				delete m_Scene;
 				m_Scene = new MenuScene();
-				static_cast<MenuScene*>(m_Scene)->GetHighScoreTable().TryAddHighScore(player->GetName(), score);
+				static_cast<MenuScene*>(m_Scene)->GetHighScoreTable().TryAddHighScore(playerName, score);
 			}
-			else
+			else if (m_Type == SceneType::MenuScene)
 			{
-				m_Type = SceneType::GameScene;
+				m_Type = SceneType::TextInputScene;
 				delete m_Scene;
-				m_Scene = new GameScene();
+				m_Scene = new TextInputScene();
 			}
 
 		break;
+
+		case SDL_SCANCODE_RETURN:
+			if (m_Type == SceneType::TextInputScene)
+			{
+				TextInputScene* tiScene = static_cast<TextInputScene*>(m_Scene);
+				std::string text = tiScene->GetInputText();
+				
+				m_Type = SceneType::GameScene;
+				delete m_Scene;
+				m_Scene = new GameScene(text);
+			}
+
 
 		default:
 			break;
@@ -165,13 +178,7 @@ void Game::ProcessEvents(SDL_Event& event) noexcept
             break;
 
         case SDL_KEYDOWN:
-            switch (event.key.keysym.scancode)
-            {
-                case SDL_SCANCODE_ESCAPE:
-                    OnKeyDown(event.key);
-                default:
-                    break;
-            }
+			OnKeyDown(event.key);
 
             break;
         default:

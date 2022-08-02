@@ -19,7 +19,7 @@ public:
 private:
     enum class SceneType
     {
-        GameScene, MenuScene
+        GameScene, MenuScene, TextInputScene
     };
 
 private:
