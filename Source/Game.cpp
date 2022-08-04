@@ -1,9 +1,6 @@
 #include "Game.h"
 #include "Globals.h"
 #include "Defines.h"
-#include "MenuScene.h"
-#include "GameScene.h"
-#include "TextInputScene.h"
 #include "Entities/Player.h"
 
 #include <SDL2/SDL_mixer.h>
@@ -128,41 +125,24 @@ void Game::OnKeyDown(const SDL_KeyboardEvent& event) noexcept
 	{
 		case SDL_SCANCODE_ESCAPE:
 			if (m_Type == SceneType::GameScene)
-			{
-				GameScene* gameScene = static_cast<GameScene*>(m_Scene);
-
-				std::uint_least64_t score = gameScene->GetScore();
-				Player* player = gameScene->GetPlayer();
-				std::string playerName;
-
-				if (player)
-					playerName = player->GetName();
-
-				m_Type = SceneType::MenuScene;
-				delete m_Scene;
-				m_Scene = new MenuScene();
-				static_cast<MenuScene*>(m_Scene)->GetHighScoreTable().TryAddHighScore(playerName, score);
-			}
+				ChangeSceneTo<MenuScene>();
 			else if (m_Type == SceneType::MenuScene)
 			{
-				m_Type = SceneType::TextInputScene;
-				delete m_Scene;
-				m_Scene = new TextInputScene();
+				if (m_PlayerName.empty())
+					ChangeSceneTo<TextInputScene>();
+				else
+					ChangeSceneTo<GameScene>();
 			}
-
 		break;
 
 		case SDL_SCANCODE_RETURN:
 			if (m_Type == SceneType::TextInputScene)
 			{
 				TextInputScene* tiScene = static_cast<TextInputScene*>(m_Scene);
-				std::string text = tiScene->GetInputText();
-				
-				m_Type = SceneType::GameScene;
-				delete m_Scene;
-				m_Scene = new GameScene(text);
-			}
+				m_PlayerName = tiScene->GetInputText();
 
+				ChangeSceneTo<GameScene>();
+			}
 
 		default:
 			break;

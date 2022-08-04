@@ -1,8 +1,12 @@
 #pragma once
 
 #include "DeltaTime.h"
+#include "MenuScene.h"
 
 #include <SDL2/SDL.h>
+
+#include <string>
+#include <cassert>
 
 class Scene;
 
@@ -29,6 +33,7 @@ private:
     float m_TimeStepMs;
 	int m_TimeAccumulated;
     bool m_Running = true;
+    std::string m_PlayerName = std::string();
 
 private:
     void SDLDeinit() noexcept;
@@ -40,4 +45,9 @@ private:
     SDL_DisplayMode GetDisplayMode() noexcept;
     void OnKeyDown(const SDL_KeyboardEvent& event) noexcept;
     void ProcessEvents(SDL_Event& event) noexcept;
+
+    template<typename SceneType> requires std::is_base_of_v<Scene, SceneType>
+    void ChangeSceneTo() noexcept;
 };
+
+#include "Game.inl"
