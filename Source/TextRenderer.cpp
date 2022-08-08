@@ -40,8 +40,8 @@ void TextRenderer::RenderText(const std::string& text, std::pair<float, float> p
     SDL_FRect rect = {
         .x = position.first,
         .y = position.second,
-        .w = w,
-        .h = h
+        .w = static_cast<float>(w),
+        .h = static_cast<float>(h)
     };
 
 

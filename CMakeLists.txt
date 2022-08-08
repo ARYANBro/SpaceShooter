@@ -1,6 +1,8 @@
-cmake_minimum_required(VERSION 3.23.2)
+cmake_minimum_required(VERSION 3.24.0)
 
 project(SpaceShooter)
+
+add_subdirectory(Libraries/SDL)
 
 file(GLOB_RECURSE Sources
 	Source/*.cpp
@@ -16,15 +18,11 @@ target_include_directories(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
-	SDL2main
-	SDL2
-	SDL2_image
-	SDL2_mixer
-	SDL2_ttf
+	SDL
 )
 
 target_compile_definitions(${PROJECT_NAME}
 	PRIVATE SDL_MAIN_HANDLED
 )
 
-install(DIRECTORY Assets/ DESTINATION Assets)
+install(DIRECTORY Assets/ DESTINATION ${CMAKE_BINARY_DIR}/$<CONFIG>/Assets)

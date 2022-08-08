@@ -3,7 +3,7 @@
 #include "DeltaTime.h"
 #include "MenuScene.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <string>
 #include <cassert>

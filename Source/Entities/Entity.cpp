@@ -14,6 +14,7 @@ Entity::Entity(Sprite& sprite, int scaleX, int scaleY) noexcept
 
 bool Entity::CheckTag(const std::string& tag) const noexcept
 {
-	const std::string* found = std::find(m_Tags.begin(), m_Tags.end(), tag);
+	// const std::string* found = 
+	auto found = std::find(m_Tags.begin(), m_Tags.end(), tag);
 	return found != m_Tags.end() ? true : false;
 }

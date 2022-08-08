@@ -2,6 +2,9 @@
 
 #include "Globals.h"
 
+#include <cmath>
+#include <algorithm>
+
 void MediumEnemy::Update(float deltaTime)
 {
     Enemy::Update(deltaTime);
