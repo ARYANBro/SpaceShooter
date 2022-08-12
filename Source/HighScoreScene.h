@@ -3,12 +3,13 @@
 #include "Scene.h"
 #include "HighScore.h"
 
-class MenuScene : public Scene
+class HighScoreScene : public Scene
 {
 public:
-    MenuScene() noexcept;
-    virtual ~MenuScene() noexcept override;
+    HighScoreScene() noexcept;
+    virtual ~HighScoreScene() noexcept override;
     virtual void Update(float deltaTime) noexcept override;
+    virtual void ProcessEvents(SDL_Event& event) noexcept override;
 
     const HighScoreTable& GetHighScoreTable() const noexcept { return m_HighScoreTable; }
     HighScoreTable& GetHighScoreTable() noexcept { return m_HighScoreTable; }

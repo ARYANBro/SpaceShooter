@@ -1,5 +1,7 @@
 #include "Game.h"
 #include "GameScene.h"
+#include "HighScoreScene.h"
+#include "MainMenu.h"
 #include "TextInputScene.h"
 #include "Entities/Player.h"
 
@@ -10,20 +12,24 @@ inline void Game::ChangeSceneTo() noexcept
 }
 
 template<> 
-inline void Game::ChangeSceneTo<MenuScene>() noexcept
+inline void Game::ChangeSceneTo<HighScoreScene>() noexcept
 {
-    GameScene* gameScene = static_cast<GameScene*>(m_Scene);
 
-    std::uint_least64_t score = gameScene->GetScore();
-    Player* player = gameScene->GetPlayer();
+    std::uint_least64_t score;
+    SceneType prevType = m_Type;
+    if (m_Type == SceneType::GameScene)
+    {
+        GameScene* gameScene = dynamic_cast<GameScene*>(m_Scene);
+        if (gameScene)
+            score = gameScene->GetHighScore();
+    }
 
-    if (player)
-        m_PlayerName = player->GetName();
-
-    m_Type = SceneType::MenuScene;
+    m_Type = SceneType::HighScoreScene;
     delete m_Scene;
-    m_Scene = new MenuScene();
-    static_cast<MenuScene*>(m_Scene)->GetHighScoreTable().TryAddHighScore(m_PlayerName, score);
+    m_Scene = new HighScoreScene();
+
+    if (prevType == SceneType::GameScene)
+        static_cast<HighScoreScene*>(m_Scene)->GetHighScoreTable().TryAddHighScore(m_PlayerName, score);
 }
 
 template<>
@@ -40,4 +46,12 @@ inline void Game::ChangeSceneTo<GameScene>() noexcept
     m_Type = SceneType::GameScene;
     delete m_Scene;
     m_Scene = new GameScene(m_PlayerName);
+}
+
+template<>
+inline void Game::ChangeSceneTo<MainMenu>() noexcept
+{
+    m_Type = SceneType::MainMenu;
+    delete m_Scene;
+    m_Scene = new MainMenu();
 }

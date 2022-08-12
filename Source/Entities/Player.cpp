@@ -1,5 +1,6 @@
 #include "Player.h"
 
+#include "Game.h"
 #include "Bullet.h"
 #include "Globals.h"
 #include "Explosion.h"
@@ -32,8 +33,8 @@ void Player::Update(float deltaTime)
 		if (m_DeathTimer.IsExpired())
 		{
 			SetCollided(false);
-			Scene::GetInstance().DestroyEntity(this);
-			Scene::GetInstance().Reset();		
+			Game::GetInstance().GetScene().DestroyEntity(this);
+			Game::GetInstance().GetScene().Reset();
 		}
 	}
 }
@@ -43,10 +44,10 @@ void Player::OnCollision(const Entity& entity)
 	if (!entity.CheckTag("Player"))
 	{
 		SetCollided(true);
-		Scene::GetInstance().GetSoundLoader().PlaySound(SoundFXType::PlayerDied);
+		Game::GetInstance().GetSoundLoader().PlaySound(SoundFXType::PlayerDied);
 
-		Sprite& sprite = Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Explosion);
-		Explosion& explosion = Scene::GetInstance().CreateEntity<Explosion>(sprite, 3, 3);
+		Sprite& sprite = Game::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Explosion);
+		Explosion& explosion = Game::GetInstance().GetScene().CreateEntity<Explosion>(sprite, 3, 3);
 		explosion.GetRectangle().x = GetRectangle().x;
 		explosion.GetRectangle().y = GetRectangle().y;
 		m_DeathTimer.SetTime(explosion.GetTimer().GetTargetTime());
@@ -103,12 +104,12 @@ void Player::MoveStraight() noexcept
 
 void Player::FireBullet() noexcept
 {
-	Bullet& bullet = Scene::GetInstance().CreateEntity<Bullet>(Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Bullet), *this, 2, 2);
+	Bullet& bullet = Game::GetInstance().GetScene().CreateEntity<Bullet>(Game::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Bullet), *this, 2, 2);
 	bullet.Fire();
 	bullet.SetSpeedY(-250.0f);
 	bullet.GetRectangle().x = GetRectangle().x;
 	bullet.GetRectangle().y = GetRectangle().y - bullet.GetRectangle().h;
 	bullet.SetActiveFrameY(1);
 
-	Scene::GetInstance().GetSoundLoader().PlaySound(SoundFXType::PlayerFire);
+	Game::GetInstance().GetSoundLoader().PlaySound(SoundFXType::PlayerFire);
 }

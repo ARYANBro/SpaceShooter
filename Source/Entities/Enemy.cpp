@@ -1,5 +1,6 @@
 #include "Enemy.h"
 
+#include "Game.h"
 #include "Scene.h"
 #include "Bullet.h"
 #include "Player.h"
@@ -39,19 +40,18 @@ void Enemy::OnCollision(const Entity& entity)
 	if (entity.CheckTag("Bullet"))
 	{	
 		const Bullet& bullet = static_cast<const Bullet&>(entity);
-		if (&bullet.GetParent() != this)
+		if (!bullet.GetParent().CheckTag("Enemy") && &bullet.GetParent() != this)
 		{
 			PhysicsEntity::OnCollision(entity);
 			if (--m_Lives <= 0)
 			{
-				Explosion& explosion = Scene::GetInstance().CreateEntity<Explosion>(Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Explosion), 3, 3);
+				Explosion& explosion = Game::GetInstance().GetScene().CreateEntity<Explosion>(Game::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Explosion), 3, 3);
 				explosion.GetRectangle().x = GetRectangle().x;
 				explosion.GetRectangle().y = GetRectangle().y;
-
-				if (auto gameScene = dynamic_cast<GameScene*>(&Scene::GetInstance()))
+				if (auto gameScene = dynamic_cast<GameScene*>(&Game::GetInstance().GetScene()))
 					gameScene->IncreaseScore();
 
-				Scene::GetInstance().DestroyEntity(this);
+				Game::GetInstance().GetScene().DestroyEntity(this);
 			}
 		}
 	}
@@ -59,8 +59,8 @@ void Enemy::OnCollision(const Entity& entity)
 
 Bullet* Enemy::FireBullet() noexcept
 {
-	Bullet& bullet = Scene::GetInstance().CreateEntity<Bullet>(
-		Scene::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Bullet),
+	Bullet& bullet = Game::GetInstance().GetScene().CreateEntity<Bullet>(
+		Game::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Bullet),
 		*this,
 		2, 2
 	);
@@ -73,14 +73,14 @@ Bullet* Enemy::FireBullet() noexcept
 	bullet.SetSpeedX(speedX);
 	bullet.SetSpeedY(speedY);
 
-	Scene::GetInstance().GetSoundLoader().PlaySound(SoundFXType::EnemyFire);
+	Game::GetInstance().GetSoundLoader().PlaySound(SoundFXType::EnemyFire);
 	return &bullet;
 }
 
 std::pair<float, float> Enemy::CalculateBulletDir(const Bullet& bullet, float speedMultiplier) noexcept
 {
 	SDL_FRect inRect;
-	for (Entity* entity : Scene::GetInstance().GetEntities())
+	for (Entity* entity : Game::GetInstance().GetScene().GetEntities())
 	{
 		if (entity->CheckTag("Player"))
 		{

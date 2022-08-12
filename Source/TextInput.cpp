@@ -1,12 +1,13 @@
 #include "TextInput.h"
 
+#include "Game.h"
 #include "Entities/Player.h"
 #include "Scene.h"
 
 void TextInput::Render(const std::pair<float, float>& position, Align alignment, SDL_Colour colour) noexcept
 {
     if (m_GetInput)
-        Scene::GetInstance().GetTextRenderer().RenderText(*m_InputText, position, alignment, colour);
+        Game::GetInstance().GetTextRenderer().RenderText(*m_InputText, position, alignment, colour);
 }
 
 void TextInput::ProcessEvent(SDL_Event& event) noexcept
@@ -44,7 +45,6 @@ void TextInput::ProcessEvent(SDL_Event& event) noexcept
         }
     }
 }
-
 
 void TextInput::EraseLastElement() noexcept
 {                       

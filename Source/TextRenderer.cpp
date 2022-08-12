@@ -26,7 +26,16 @@ void TextRenderer::SetActiveFont(const std::string& filePath, int fontSize) noex
     if (m_ActiveFont != nullptr)
         TTF_CloseFont(m_ActiveFont);
 
-    m_ActiveFont = TTF_OpenFont(filePath.c_str(), fontSize);
+    m_FontPath = filePath;
+    m_ActiveFont = TTF_OpenFont(m_FontPath.c_str(), fontSize);
+}
+
+void TextRenderer::SetActiveFontSize(int fontSize) noexcept
+{
+    if (m_ActiveFont != nullptr)
+        TTF_CloseFont(m_ActiveFont);
+
+    m_ActiveFont = TTF_OpenFont(m_FontPath.c_str(), fontSize);
 }
 
 void TextRenderer::RenderText(const std::string& text, std::pair<float, float> position, Align alignment, SDL_Colour colour) noexcept

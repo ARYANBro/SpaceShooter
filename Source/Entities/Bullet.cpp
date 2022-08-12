@@ -1,6 +1,7 @@
 #include "Bullet.h"
 
 #include "Scene.h"
+#include "Game.h"
 
 void Bullet::Update(float deltaTime) noexcept
 {
@@ -14,14 +15,17 @@ void Bullet::Update(float deltaTime) noexcept
 	}
 
 	if (rect.y <= 0 && !IsNull())
-		Scene::GetInstance().DestroyEntity(this);
+		Game::GetInstance().GetScene().DestroyEntity(this);
 }
 
 void Bullet::OnCollision(const Entity& entity)
 {
-	if (!entity.CheckTag("Bullet") && &entity != &m_Parent)
+	if (m_Parent.CheckTag("Enemy") && entity.CheckTag("Enemy"))
+		return;
+	
+	if (!entity.CheckTag("Bullet") && &m_Parent != &entity)
 	{
 		SetCollided(true);
-		Scene::GetInstance().DestroyEntity(this);
+		Game::GetInstance().GetScene().DestroyEntity(this);
 	}
 }

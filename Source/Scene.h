@@ -1,11 +1,7 @@
 #pragma once
 
 #include "Entities/Entity.h"
-#include "BackGround.h"
-#include "SoundLoader.h"
-#include "SpriteLoader.h"
 #include "DeltaTime.h"
-#include "TextRenderer.h"
 #include "HighScore.h"
 
 #include <list>
@@ -30,26 +26,11 @@ public:
 
 	std::list<Entity*>& GetEntities() noexcept { return m_Entities; }
 	const std::list<Entity*>& GetEntities() const noexcept { return m_Entities; }
-	SpriteLoader& GetSpriteLoader() noexcept { return m_SpriteLoader; }
-	SoundLoader& GetSoundLoader() noexcept { return m_SoundLoader; } 
-	TextRenderer& GetTextRenderer() noexcept { return m_TextRenderer; }
-	static Scene& GetInstance() noexcept { return *s_Scene; }
-
 private:
+	std::list<Entity*> m_DelQueue = { nullptr };
 	bool m_UpdateEntities = true, m_RenderEntities = true;
 	std::list<Entity*> m_Entities = { nullptr };
-	std::list<Entity*> m_DelQueue = { nullptr };
-	ScrollingBackGround m_BackGround;
-	SpriteLoader m_SpriteLoader;
-	SoundLoader m_SoundLoader;
-	TextRenderer m_TextRenderer;
-
-	static Scene* s_Scene;
-
 private:
-	void LoadSprites() noexcept;
-	void LoadSounds() noexcept;
-	void LoadScene() noexcept;
 	void PhysicsUpdate() noexcept;
 	void DeleteQueue() noexcept;
 };

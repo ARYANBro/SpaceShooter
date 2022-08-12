@@ -7,22 +7,32 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
+static void RenderTexture(SDL_Texture* texture, SDL_Rect* texRect, const SDL_FRect& rectangle) noexcept
+{
+	SDL_RenderCopyF(Globals::Renderer::Renderer, texture, texRect, &rectangle);
+}
+
+Game* Game::s_Instance = nullptr;
+
 Game::Game() noexcept
 {
+	s_Instance = this;
     SDLInit();
 	
 	m_TimeStepMs = 1000.0f / GetDisplayMode().refresh_rate;
 	m_TimeAccumulated = 0;
 
-	m_Type = SceneType::MenuScene;
-	m_Scene = new MenuScene();
+	LoadSprites();
+	LoadSounds();
+	LoadScene();
+
+	ChangeSceneTo<MainMenu>();
 }
 
 Game::~Game() noexcept
 {
     delete m_Scene;
 	SDLDeinit();
-
 }
 
 void Game::Update() noexcept
@@ -31,7 +41,12 @@ void Game::Update() noexcept
 	{
         m_DeltaTime.Update();
         ProcessInput();
+		m_BackGround.Update(m_DeltaTime.GetDeltaTime());
 		m_Scene->Update(m_DeltaTime.GetDeltaTime());
+
+		if (m_Type == SceneType::MainMenu || m_Type == SceneType::HighScoreScene)
+			SceneToggleUpdate(m_DeltaTime.GetDeltaTime());
+
         Render();
 	}
 }
@@ -52,6 +67,7 @@ void Game::ProcessInput() noexcept
 void Game::Render() noexcept
 {
     BeginRender();
+	RenderTexture(m_BackGround.GetTexture(), &m_BackGround.GetTextureRectangle(), m_BackGround.GetRectangle());
     m_Scene->Render();
     EndRender();
 }
@@ -124,33 +140,40 @@ void Game::OnKeyDown(const SDL_KeyboardEvent& event) noexcept
 	switch (event.keysym.scancode)
 	{
 		case SDL_SCANCODE_ESCAPE:
-			if (m_Type == SceneType::GameScene)
-				ChangeSceneTo<MenuScene>();
-			else if (m_Type == SceneType::MenuScene)
-			{
-				if (m_PlayerName.empty())
-					ChangeSceneTo<TextInputScene>();
-				else
-					ChangeSceneTo<GameScene>();
-			}
+			OnEscape(event);
 		break;
 
 		case SDL_SCANCODE_RETURN:
-			if (m_Type == SceneType::TextInputScene)
-			{
-				TextInputScene* tiScene = static_cast<TextInputScene*>(m_Scene);
-				m_PlayerName = tiScene->GetInputText();
-
-				ChangeSceneTo<GameScene>();
-			}
+			OnReturn(event);
 
 		default:
 			break;
 	}
 }
 
+void Game::OnReturn(const SDL_KeyboardEvent& event) noexcept
+{
+	switch(m_Type)
+	{
+		case SceneType::HighScoreScene:
+		// case SceneType::MainMenu:
+			ChangeSceneTo<TextInputScene>();
+			break;
+
+		default:
+			break;
+	}
+
+}
+
+void Game::OnEscape(const SDL_KeyboardEvent& event) noexcept
+{
+}
+
 void Game::ProcessEvents(SDL_Event& event) noexcept
 {
+	m_Scene->ProcessEvents(event);
+
     switch (event.type)
     {
         case SDL_QUIT:
@@ -164,6 +187,52 @@ void Game::ProcessEvents(SDL_Event& event) noexcept
         default:
             break;
     }
+}
 
-	m_Scene->ProcessEvents(event);
+void Game::SceneToggleUpdate(float deltaTime) noexcept
+{
+	m_Timer.Update(deltaTime);
+	if (m_Timer.IsExpired())
+	{
+		m_MenuToggle == false ? m_MenuToggle = true : m_MenuToggle = false;
+		m_Timer.Reset();
+	}
+
+	if (m_MenuToggle)
+	{
+		if (m_Type != SceneType::HighScoreScene)
+			ChangeSceneTo<HighScoreScene>();
+	}
+	else
+	{
+		if (m_Type != SceneType::MainMenu)
+			ChangeSceneTo<MainMenu>();
+	}
+}
+
+void Game::LoadSprites() noexcept
+{
+	m_SpriteLoader.Load(SpriteType::Explosion, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/explosion.png", { 5, 1 });
+	m_SpriteLoader.Load(SpriteType::Player, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/ship.png", { 5, 2 });
+	m_SpriteLoader.Load(SpriteType::Bullet, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/laser-bolts.png", { 2, 2 });
+	m_SpriteLoader.Load(SpriteType::SmallEnemy, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/enemy-small.png", { 2, 1 });
+	m_SpriteLoader.Load(SpriteType::MediumEnemy, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/enemy-medium.png", { 2, 1 });
+	m_SpriteLoader.Load(SpriteType::BigEnemy, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/enemy-big.png", { 2, 1 });
+}
+
+void Game::LoadSounds() noexcept
+{
+	m_SoundLoader.LoadWAV(SoundFXType::PlayerDied, "Assets/SoundFX/Explosion.wav");
+	m_SoundLoader.LoadWAV(SoundFXType::EnemyDied, "Assets/SoundFX/EnemyDied.wav");
+	m_SoundLoader.LoadWAV(SoundFXType::PlayerFire, "Assets/SoundFX/PlayerFire.wav");
+	m_SoundLoader.LoadWAV(SoundFXType::EnemyFire, "Assets/SoundFX/EnemyFire.wav");
+	m_SoundLoader.LoadMusic("Assets/Textures/space_shooter_pack/spaceship shooter music/spaceship shooter .ogg");
+}
+
+void Game::LoadScene() noexcept
+{
+	m_TextRenderer.SetActiveFont("Assets/Fonts/Roboto-Medium.ttf", 28);
+	m_BackGround.Init("Assets/Textures/space_shooter_pack/Graphics/backgrounds/desert-backgorund-looped.png", 1, 1);
+	m_SoundLoader.PlayMusic();
+	m_SpriteLoader.GetSprite(SpriteType::Player).SetFrameX(2);
 }

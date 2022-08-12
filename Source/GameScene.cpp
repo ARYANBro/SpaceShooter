@@ -1,13 +1,15 @@
 #include "GameScene.h"
 
+#include "HighScoreScene.h"
 #include "EnemySpawner.h"
 #include "Entities/Player.h"
+#include "Game.h"
 
 GameScene::GameScene(const std::string& playerName) noexcept
     : m_Spawner(nullptr)
 {
 	m_Spawner = new EnemySpawner(2.0f, 3.0f);
-    Player& player = CreateEntity<Player>(GetSpriteLoader().GetSprite(SpriteType::Player), 2.0f, 2.0f, playerName);
+    Player& player = CreateEntity<Player>(Game::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Player), 2.0f, 2.0f, playerName);
 }
 
 GameScene::~GameScene()
@@ -17,13 +19,16 @@ GameScene::~GameScene()
 
 void GameScene::Reset() noexcept
 {
+    if (m_Score > m_HighScore)
+        m_HighScore = m_Score;
+        
     std::string playerName;
     if (Player* player = GetPlayer())
         playerName = player->GetName();
     Scene::Reset();
     SetGameOver(true);
     ResetScore();
-	CreateEntity<Player>(GetSpriteLoader().GetSprite(SpriteType::Player), 2.0f, 2.0f, playerName);
+	CreateEntity<Player>(Game::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Player), 2.0f, 2.0f, playerName);
 }
 
 void GameScene::Update(float deltaTime) noexcept
@@ -55,6 +60,27 @@ void GameScene::Update(float deltaTime) noexcept
 
 void GameScene::ProcessEvents(SDL_Event& event) noexcept
 {
+    switch (event.type)
+    {
+        case SDL_KEYDOWN:
+        {
+            switch (event.key.keysym.scancode)
+            {
+                case SDL_SCANCODE_ESCAPE:
+                    // Game::GetInstance().SetPlayerName(GetPlayer()->GetName());
+                    Game::GetInstance().ChangeSceneTo<HighScoreScene>();
+                    break;
+                
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        default:
+        break;
+    }
 }
 
 void GameScene::IncreaseScore() noexcept
@@ -73,8 +99,8 @@ Player* GameScene::GetPlayer() noexcept
 
 void GameScene::RenderHud() noexcept
 {
-    GetTextRenderer().RenderText("Score: " + std::to_string(m_Score), { 0.0f, 0.0f });
+    Game::GetInstance().GetTextRenderer().RenderText("Score: " + std::to_string(m_Score), { 0.0f, 0.0f });
 
-        if (Player* player = GetPlayer())
-            GetTextRenderer().RenderText("Player Name: " + player->GetName(), { 0.0f, 100.0f });
+    if (Player* player = GetPlayer())
+        Game::GetInstance().GetTextRenderer().RenderText("Player Name: " + player->GetName(), { 0.0f, 100.0f });
 }
