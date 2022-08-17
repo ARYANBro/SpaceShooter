@@ -17,7 +17,7 @@ public:
 	}
 
 	virtual void Update(float deltaTime) override;
-	virtual void OnCollision(const Entity& entity) override;
+	virtual void OnCollision(Entity& entity) override;
 
 	virtual Bullet* FireBullet() noexcept;
 

@@ -2,6 +2,8 @@
 
 #include "HighScoreScene.h"
 #include "EnemySpawner.h"
+#include "Entities/KillShotPowerUp.h"
+#include "Entities/FireRateOverloadPowerup.h"
 #include "Entities/Player.h"
 #include "Game.h"
 
@@ -10,6 +12,8 @@ GameScene::GameScene(const std::string& playerName) noexcept
 {
 	m_Spawner = new EnemySpawner(2.0f, 3.0f);
     Player& player = CreateEntity<Player>(Game::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Player), 2.0f, 2.0f, playerName);
+    CreateEntity<KillShotPowerUp>(2.0f, 2.0f);
+    CreateEntity<FireRateOverloadPowerUp>(2.0f, 2.0f);
 }
 
 GameScene::~GameScene()
@@ -58,6 +62,11 @@ void GameScene::Update(float deltaTime) noexcept
     }
 }
 
+void GameScene::Render() noexcept
+{
+    Scene::Render();
+}
+
 void GameScene::ProcessEvents(SDL_Event& event) noexcept
 {
     switch (event.type)
@@ -67,7 +76,6 @@ void GameScene::ProcessEvents(SDL_Event& event) noexcept
             switch (event.key.keysym.scancode)
             {
                 case SDL_SCANCODE_ESCAPE:
-                    // Game::GetInstance().SetPlayerName(GetPlayer()->GetName());
                     Game::GetInstance().ChangeSceneTo<HighScoreScene>();
                     break;
                 
@@ -100,7 +108,4 @@ Player* GameScene::GetPlayer() noexcept
 void GameScene::RenderHud() noexcept
 {
     Game::GetInstance().GetTextRenderer().RenderText("Score: " + std::to_string(m_Score), { 0.0f, 0.0f });
-
-    if (Player* player = GetPlayer())
-        Game::GetInstance().GetTextRenderer().RenderText("Player Name: " + player->GetName(), { 0.0f, 100.0f });
 }

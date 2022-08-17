@@ -16,6 +16,7 @@ public:
 
     virtual void Reset() noexcept override;
     virtual void Update(float deltaTime) noexcept override;
+    virtual void Render() noexcept override;
     virtual void ProcessEvents(SDL_Event& event) noexcept override;
     void ResetScore() noexcept { m_Score = 0; }
 

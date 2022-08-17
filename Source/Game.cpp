@@ -218,6 +218,7 @@ void Game::LoadSprites() noexcept
 	m_SpriteLoader.Load(SpriteType::SmallEnemy, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/enemy-small.png", { 2, 1 });
 	m_SpriteLoader.Load(SpriteType::MediumEnemy, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/enemy-medium.png", { 2, 1 });
 	m_SpriteLoader.Load(SpriteType::BigEnemy, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/enemy-big.png", { 2, 1 });
+	m_SpriteLoader.Load(SpriteType::PowerUp, "Assets/Textures/space_shooter_pack/Graphics/spritesheets/power-up.png", { 2, 2 });
 }
 
 void Game::LoadSounds() noexcept

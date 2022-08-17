@@ -39,9 +39,9 @@ void Player::Update(float deltaTime)
 	}
 }
 
-void Player::OnCollision(const Entity& entity)
+void Player::OnCollision(Entity& entity)
 {
-	if (!entity.CheckTag("Player"))
+	if (!entity.CheckTag("Player") && !entity.CheckTag("PowerUp"))
 	{
 		SetCollided(true);
 		Game::GetInstance().GetSoundLoader().PlaySound(SoundFXType::PlayerDied);
@@ -104,7 +104,7 @@ void Player::MoveStraight() noexcept
 
 void Player::FireBullet() noexcept
 {
-	Bullet& bullet = Game::GetInstance().GetScene().CreateEntity<Bullet>(Game::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Bullet), *this, 2, 2);
+	Bullet& bullet = Game::GetInstance().GetScene().CreateEntity<Bullet>(Game::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Bullet), *this, m_Damage, 2, 2);
 	bullet.Fire();
 	bullet.SetSpeedY(-250.0f);
 	bullet.GetRectangle().x = GetRectangle().x;

@@ -18,7 +18,7 @@ void Bullet::Update(float deltaTime) noexcept
 		Game::GetInstance().GetScene().DestroyEntity(this);
 }
 
-void Bullet::OnCollision(const Entity& entity)
+void Bullet::OnCollision(Entity& entity)
 {
 	if (m_Parent.CheckTag("Enemy") && entity.CheckTag("Enemy"))
 		return;

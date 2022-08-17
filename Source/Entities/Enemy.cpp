@@ -35,7 +35,7 @@ void Enemy::Update(float deltaTime)
 		CollisionUpdate(deltaTime);
 }
 
-void Enemy::OnCollision(const Entity& entity)
+void Enemy::OnCollision(Entity& entity)
 {
 	if (entity.CheckTag("Bullet"))
 	{	
@@ -43,7 +43,7 @@ void Enemy::OnCollision(const Entity& entity)
 		if (!bullet.GetParent().CheckTag("Enemy") && &bullet.GetParent() != this)
 		{
 			PhysicsEntity::OnCollision(entity);
-			if (--m_Lives <= 0)
+			if ((m_Lives -= bullet.GetDamage()) <= 0)
 			{
 				Explosion& explosion = Game::GetInstance().GetScene().CreateEntity<Explosion>(Game::GetInstance().GetSpriteLoader().GetSprite(SpriteType::Explosion), 3, 3);
 				explosion.GetRectangle().x = GetRectangle().x;

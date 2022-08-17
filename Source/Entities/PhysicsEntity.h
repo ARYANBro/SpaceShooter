@@ -14,7 +14,7 @@ public:
 		AddTag("PhysicsEntity");
 	}
 
-	virtual void OnCollision(const Entity& entity) { m_Collided = true; };
+	virtual void OnCollision(Entity& entity) { m_Collided = true; };
 
 	bool Collided() const noexcept { return m_Collided; }
 
